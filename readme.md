@@ -1,4 +1,4 @@
-# Infinite Color
+# Infinite Paint
 
 This is a three.js dojo app enabling users to paint on an infinite grid.
 

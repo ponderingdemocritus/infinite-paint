@@ -13,6 +13,18 @@ export interface MoveProps {
 
 export async function setupWorld(provider: DojoProvider) {
 	function actions() {
+		const create_player = async ({ account }: { account: AccountInterface }) => {
+			try {
+				return await provider.execute(account, {
+					contractName: 'actions',
+					entrypoint: 'create_player',
+					calldata: [],
+				});
+			} catch (error) {
+				console.error('Error executing spawn:', error);
+				throw error;
+			}
+		};
 		const paint = async ({ account, x, y, color }: { account: AccountInterface; x: string; y: string; color: string }) => {
 			try {
 				return await provider.execute(account, {
@@ -25,7 +37,7 @@ export async function setupWorld(provider: DojoProvider) {
 				throw error;
 			}
 		};
-		return { paint };
+		return { paint, create_player };
 	}
 	return {
 		actions: actions(),

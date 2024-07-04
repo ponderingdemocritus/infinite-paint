@@ -21,10 +21,10 @@ export class Scene {
 	private mouse: THREE.Vector2;
 	private squares: THREE.Mesh[][] = [];
 
-	private cameraDistance = Math.sqrt(2 * 15 * 15); // Maintain the same distance
+	private cameraDistance = Math.sqrt(2 * 20 * 20); // Maintain the same distance
 	private cameraAngle = 60 * (Math.PI / 180); // 75 degrees in radians
 
-	private chunkSize = 15; // Size of each chunk
+	private chunkSize = 10; // Size of each chunk
 	private loadedChunks: Map<string, THREE.Group> = new Map();
 	private chunkLoadDistance = 2;
 

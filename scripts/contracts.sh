@@ -8,4 +8,4 @@ echo "Building Contracts"
 cd contracts
 
 # Run katana with the disable-fee option
-katana --disable-fee --allowed-origins "*"
+katana --disable-fee --allowed-origins "*" --block-time 1000

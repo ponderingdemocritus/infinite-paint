@@ -64,6 +64,13 @@
     "items": [
       {
         "type": "function",
+        "name": "create_player",
+        "inputs": [],
+        "outputs": [],
+        "state_mutability": "external"
+      },
+      {
+        "type": "function",
         "name": "paint",
         "inputs": [
           {
