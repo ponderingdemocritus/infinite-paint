@@ -175,7 +175,6 @@ export class Scene {
 				console.log(`Clicked square world coordinates: x=${worldX}, z=${worldZ}`);
 
 				// Change the color and opacity of the clicked square
-
 				// const material = intersect.object.material as THREE.MeshBasicMaterial;
 				// material.color.setHex(this.selectedColor as number);
 				// material.opacity = 0.5;
@@ -221,6 +220,18 @@ export class Scene {
 					transparent: true,
 				});
 				mesh.material = hoverMaterial;
+
+				// Add pulsing effect
+				const pulseAnimation = () => {
+					if (this.hoveredMesh === mesh) {
+						const scale = 1 + Math.sin(Date.now() * 0.03) * 0.05; // Adjust speed and intensity here
+						mesh.scale.set(scale, scale, scale);
+						requestAnimationFrame(pulseAnimation);
+					} else {
+						mesh.scale.set(1, 1, 1);
+					}
+				};
+				pulseAnimation();
 
 				// Calculate and log coordinates (optional)
 				const chunk = mesh.parent as THREE.Group;
