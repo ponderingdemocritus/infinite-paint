@@ -3,30 +3,31 @@ import { SetupResult } from '../dojo/generated/setup';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import _ from 'lodash';
 import { shortString } from 'starknet';
-import { defineComponentSystem, getComponentValue } from '@dojoengine/recs';
-import { getEntityIdFromKeys } from '@dojoengine/utils';
-import { ColorRepresentation } from 'three';
 
-// offset as negative numbers
-const OFFSET = 5000;
+import { ColorRepresentation } from 'three';
+import { ChunkManager, OFFSET } from './ChunkManager';
+import { TileSystem } from './TileSystem';
 
 export class Scene {
 	private scene!: THREE.Scene;
 	private camera!: THREE.PerspectiveCamera;
 	private renderer!: THREE.WebGLRenderer;
 
+	private hoveredMesh: THREE.Mesh | null = null;
+	private originalMaterial: THREE.Material | null = null;
+
+	private chunkManager!: ChunkManager;
+	private tileSystem!: TileSystem;
+
 	private controls!: OrbitControls;
 
 	private raycaster: THREE.Raycaster;
 	private mouse: THREE.Vector2;
-	private squares: THREE.Mesh[][] = [];
 
 	private cameraDistance = Math.sqrt(2 * 20 * 20); // Maintain the same distance
 	private cameraAngle = 60 * (Math.PI / 180); // 75 degrees in radians
 
 	private chunkSize = 10; // Size of each chunk
-	private loadedChunks: Map<string, THREE.Group> = new Map();
-	private chunkLoadDistance = 2;
 
 	private lerpFactor = 0.9;
 
@@ -43,13 +44,12 @@ export class Scene {
 
 		this.raycaster = new THREE.Raycaster();
 		this.mouse = new THREE.Vector2();
-
-		this.createContextMenu();
-		this.setupTileSystem();
 	}
 
 	initScene() {
 		this.scene = new THREE.Scene();
+		this.renderer = new THREE.WebGLRenderer();
+
 		this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 		const cameraHeight = Math.sin(this.cameraAngle) * this.cameraDistance;
 		const cameraDepth = Math.cos(this.cameraAngle) * this.cameraDistance;
@@ -57,10 +57,13 @@ export class Scene {
 		this.camera.lookAt(0, 0, 0);
 		this.camera.up.set(0, 1, 0);
 
-		this.renderer = new THREE.WebGLRenderer();
-
 		this.renderer.setSize(this.width, this.height);
 		document.body.appendChild(this.renderer.domElement);
+
+		this.chunkManager = new ChunkManager(this.scene, this.dojo);
+
+		this.tileSystem = new TileSystem(this.dojo, this.chunkManager);
+		this.tileSystem.setupTileSystem();
 
 		this.setupCamera();
 		this.setupControls();
@@ -69,56 +72,15 @@ export class Scene {
 		this.controls.addEventListener(
 			'change',
 			_.throttle(() => {
-				this.loadChunksAroundCamera();
+				this.chunkManager.update(this.camera.position);
 			}, 100)
 		);
 
-		this.animate();
-
 		this.setupMouseListeners();
-	}
 
-	private setupTileSystem() {
-		defineComponentSystem(this.dojo.world, this.dojo.clientComponents.Tile, (update) => {
-			const { value } = update;
+		this.createContextMenu();
 
-			this.updateTile(value[0]?.x || 0, value[0]?.y || 0, value[0]?.color.toString() || '');
-		});
-	}
-
-	private updateTile(x: number, y: number, value: string) {
-		const chunkX = Math.floor((x - OFFSET) / this.chunkSize);
-		const chunkZ = Math.floor((y - OFFSET) / this.chunkSize);
-		const chunkKey = `${chunkX},${chunkZ}`;
-
-		if (this.loadedChunks.has(chunkKey)) {
-			const chunk = this.loadedChunks.get(chunkKey)!;
-			let localX = (x - OFFSET) % this.chunkSize;
-			let localZ = (y - OFFSET) % this.chunkSize;
-
-			// Ensure localX and localZ are always positive
-			if (localX < 0) localX += this.chunkSize;
-			if (localZ < 0) localZ += this.chunkSize;
-
-			// Swap X and Z when calculating the index
-			const tileIndex = localZ + localX * this.chunkSize;
-
-			console.log(`World coordinates: (${x}, ${y})`);
-			console.log(`Chunk coordinates: (${chunkX}, ${chunkZ})`);
-			console.log(`Local coordinates: (${localX}, ${localZ})`);
-			console.log(`Updating tile at index ${tileIndex}`);
-
-			const tile = chunk.children[tileIndex] as THREE.Mesh;
-			if (tile instanceof THREE.Mesh) {
-				const material = tile.material as THREE.MeshBasicMaterial;
-				material.color.setHex(parseInt(shortString.decodeShortString(value)));
-				material.opacity = 0.5;
-			} else {
-				console.log(`Tile not found at index ${tileIndex}`);
-			}
-		} else {
-			console.log(`Chunk not loaded for tile at (${x}, ${y})`);
-		}
+		this.animate();
 	}
 
 	private setupControls() {
@@ -131,91 +93,6 @@ export class Scene {
 		this.controls.maxPolarAngle = Math.PI / 2.5; // Limit how low the camera can go
 		this.controls.minPolarAngle = Math.PI / 4; // Limit how high the camera can go
 		this.controls.enableRotate = false; // Disable rotation for RTS-like controls
-	}
-
-	private createChunk(chunkX: number, chunkZ: number): THREE.Group {
-		const chunk = new THREE.Group();
-		const geometry = new THREE.PlaneGeometry(1, 1);
-		const material = new THREE.MeshBasicMaterial({
-			color: 'white',
-			side: THREE.DoubleSide,
-			transparent: true,
-			opacity: 0,
-		});
-
-		// Create squares
-		for (let x = 0; x < this.chunkSize; x++) {
-			for (let z = 0; z < this.chunkSize; z++) {
-				const square = new THREE.Mesh(geometry, material.clone());
-				const worldX = chunkX * this.chunkSize + x + OFFSET;
-				const worldZ = chunkZ * this.chunkSize + z + OFFSET;
-				square.position.set(x + 0.5, 0, z + 0.5);
-				square.rotation.x = -Math.PI / 2;
-
-				const tileEntityId = getEntityIdFromKeys([BigInt(worldX), BigInt(worldZ)]);
-				const tileComponent = getComponentValue(this.dojo.clientComponents.Tile, tileEntityId);
-
-				if (tileComponent && tileComponent.color) {
-					console.log(`Tile at (${worldX}, ${worldZ}) has color: ${tileComponent.color}`);
-
-					console.log(tileComponent.color.toString());
-					square.material.color.setHex(parseInt(shortString.decodeShortString(tileComponent.color.toString())));
-					square.material.opacity = 0.5;
-				}
-
-				chunk.add(square);
-				this.squares[worldX] = this.squares[worldX] || [];
-				this.squares[worldX][worldZ] = square;
-			}
-		}
-
-		const greenLineMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 }); // Green color
-
-		for (let i = 0; i <= this.chunkSize; i++) {
-			const lineGeometry1 = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(i, 0, 0), new THREE.Vector3(i, 0, this.chunkSize)]);
-			const lineGeometry2 = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, i), new THREE.Vector3(this.chunkSize, 0, i)]);
-
-			chunk.add(new THREE.Line(lineGeometry1, greenLineMaterial));
-			chunk.add(new THREE.Line(lineGeometry2, greenLineMaterial));
-		}
-
-		chunk.position.set(chunkX * this.chunkSize, 0, chunkZ * this.chunkSize);
-
-		return chunk;
-	}
-
-	private loadChunksAroundCamera() {
-		const cameraChunkX = Math.floor(this.camera.position.x / this.chunkSize);
-		const cameraChunkZ = Math.floor(this.camera.position.z / this.chunkSize);
-
-		for (let dx = -this.chunkLoadDistance; dx <= this.chunkLoadDistance; dx++) {
-			for (let dz = -this.chunkLoadDistance; dz <= this.chunkLoadDistance; dz++) {
-				const chunkX = cameraChunkX + dx;
-				const chunkZ = cameraChunkZ + dz;
-				const chunkKey = `${chunkX},${chunkZ}`;
-
-				if (!this.loadedChunks.has(chunkKey)) {
-					const chunk = this.createChunk(chunkX, chunkZ);
-					this.scene.add(chunk);
-					this.loadedChunks.set(chunkKey, chunk);
-				}
-			}
-		}
-
-		// Optionally, unload distant chunks
-		this.unloadDistantChunks(cameraChunkX, cameraChunkZ);
-	}
-
-	private unloadDistantChunks(cameraChunkX: number, cameraChunkZ: number) {
-		for (const [chunkKey, chunk] of this.loadedChunks.entries()) {
-			const [chunkX, chunkZ] = chunkKey.split(',').map(Number);
-			const distance = Math.max(Math.abs(chunkX - cameraChunkX), Math.abs(chunkZ - cameraChunkZ));
-
-			if (distance > this.chunkLoadDistance + 1) {
-				this.scene.remove(chunk);
-				this.loadedChunks.delete(chunkKey);
-			}
-		}
 	}
 
 	private setupCamera() {
@@ -266,6 +143,7 @@ export class Scene {
 		document.addEventListener('click', () => {
 			this.contextMenu.style.display = 'none';
 		});
+		this.renderer.domElement.addEventListener('mousemove', (event) => this.onMouseHover(event), false);
 	}
 
 	async onMouseClick(event: MouseEvent) {
@@ -314,15 +192,55 @@ export class Scene {
 		}
 	}
 
-	private addLights() {
-		// Ambient light for overall scene brightness
-		const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-		this.scene.add(ambientLight);
+	private onMouseHover(event: MouseEvent) {
+		this.mouse.x = (event.clientX / this.width) * 2 - 1;
+		this.mouse.y = -(event.clientY / this.height) * 2 + 1;
 
-		// Directional light for some shadows and depth
-		const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-		directionalLight.position.set(1, 1, 1).normalize();
-		this.scene.add(directionalLight);
+		this.raycaster.setFromCamera(this.mouse, this.camera);
+
+		const intersects = this.raycaster.intersectObjects(this.scene.children, true);
+
+		// Reset previously hovered mesh
+		if (this.hoveredMesh && this.originalMaterial) {
+			this.hoveredMesh.material = this.originalMaterial;
+			this.hoveredMesh = null;
+			this.originalMaterial = null;
+		}
+
+		for (let intersect of intersects) {
+			if (intersect.object instanceof THREE.Mesh) {
+				const mesh = intersect.object as THREE.Mesh;
+
+				// Store original material and apply hover effect
+				this.hoveredMesh = mesh;
+				this.originalMaterial = mesh.material as any;
+
+				const hoverMaterial = new THREE.MeshBasicMaterial({
+					color: this.selectedColor,
+					opacity: 0.5,
+					transparent: true,
+				});
+				mesh.material = hoverMaterial;
+
+				// Calculate and log coordinates (optional)
+				const chunk = mesh.parent as THREE.Group;
+				const chunkPosition = new THREE.Vector3();
+				chunk.getWorldPosition(chunkPosition);
+
+				const localX = Math.floor(intersect.point.x - chunkPosition.x);
+				const localZ = Math.floor(intersect.point.z - chunkPosition.z);
+
+				const chunkX = Math.floor(chunkPosition.x / this.chunkSize);
+				const chunkZ = Math.floor(chunkPosition.z / this.chunkSize);
+
+				const worldX = chunkX * this.chunkSize + localX + OFFSET;
+				const worldZ = chunkZ * this.chunkSize + localZ + OFFSET;
+
+				console.log(`Hovered square world coordinates: x=${worldX}, z=${worldZ}`);
+
+				break;
+			}
+		}
 	}
 
 	private createContextMenu() {
@@ -358,12 +276,23 @@ export class Scene {
 		this.contextMenu.style.top = `${event.clientY}px`;
 	}
 
+	private addLights() {
+		// Ambient light for overall scene brightness
+		const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+		this.scene.add(ambientLight);
+
+		// Directional light for some shadows and depth
+		const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+		directionalLight.position.set(1, 1, 1).normalize();
+		this.scene.add(directionalLight);
+	}
+
 	public onWindowResize() {
 		this.width = window.innerWidth;
 		this.height = window.innerHeight;
 		this.camera.aspect = this.width / this.height;
 		this.camera.updateProjectionMatrix();
 		this.renderer.setSize(this.width, this.height);
-		this.render(); // Add this line to ensure the scene is re-rendered on resize
+		this.render();
 	}
 }
