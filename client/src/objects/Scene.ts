@@ -91,11 +91,9 @@ export class Scene {
 		this.controls.enableDamping = true;
 		this.controls.dampingFactor = 0.05;
 		this.controls.screenSpacePanning = true;
-		this.controls.minDistance = 10;
-		this.controls.maxDistance = 100;
-		this.controls.maxPolarAngle = Math.PI / 2.5; // Limit how low the camera can go
-		this.controls.minPolarAngle = Math.PI / 4; // Limit how high the camera can go
-		this.controls.enableRotate = false; // Disable rotation for RTS-like controls
+		this.controls.enableZoom = false; // Disable zooming
+		this.controls.enableRotate = false; // Disable rotation
+		this.controls.enablePan = true;
 	}
 
 	private setupCamera() {
