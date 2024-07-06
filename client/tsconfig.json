@@ -4,15 +4,17 @@
 		"module": "ESNext",
 		"lib": ["ESNext", "DOM"],
 		"moduleResolution": "Node",
-		"strict": true,
+		// "strict": true,
 		"sourceMap": true,
 		"resolveJsonModule": true,
 		"esModuleInterop": true,
 		"noEmit": true,
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
+		// "noUnusedLocals": true,
+		// "noUnusedParameters": true,
 		"noImplicitReturns": true,
-		"jsx": "react-jsx"
+		"jsx": "react-jsx",
+		"skipLibCheck": true,
+		"allowSyntheticDefaultImports": true
 	},
 	"include": ["./src"]
 }

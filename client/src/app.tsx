@@ -29,6 +29,7 @@ const App: React.FC = () => {
 
 			return () => clearInterval(intervalId);
 		}
+		return () => {};
 	}, [player?.last_action]);
 
 	return (
