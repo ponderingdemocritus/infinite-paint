@@ -34,8 +34,6 @@ const App: React.FC = () => {
 
 	return (
 		<>
-			{countdown && countdown > 0 ? <div className='fixed h-screen w-screen cursor-not-allowed bg-transparent'></div> : <></>}
-
 			<div className={`fixed top-0 left-0 right-0 flex justify-between items-start p-4 text-green-500 text-xl -skew-y-3`}>
 				<div className='bg-black bg-opacity-50 p-3 rounded-lg'>
 					<div>Player: {shortenHex(account.address)}</div>
