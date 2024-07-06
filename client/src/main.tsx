@@ -12,6 +12,12 @@ async function init() {
 	if (!rootElement) throw new Error('React root not found');
 	const root = ReactDOM.createRoot(rootElement as HTMLElement);
 
+	root.render(
+		<div className='bg-black text-green-400 h-screen w-screen flex justify-center'>
+			<div className='self-center'>Generating world...</div>
+		</div>
+	);
+
 	const setupResult = await setup(dojoConfig);
 
 	const graphic = new Scene(setupResult);
