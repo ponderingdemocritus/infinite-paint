@@ -44,12 +44,14 @@ export class Scene {
 
 		this.raycaster = new THREE.Raycaster();
 		this.mouse = new THREE.Vector2();
-	}
 
-	initScene() {
 		this.scene = new THREE.Scene();
 		this.renderer = new THREE.WebGLRenderer();
 
+		this.chunkManager = new ChunkManager(this.scene, this.dojo);
+	}
+
+	initScene() {
 		this.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
 		const cameraHeight = Math.sin(this.cameraAngle) * this.cameraDistance;
 		const cameraDepth = Math.cos(this.cameraAngle) * this.cameraDistance;
@@ -59,11 +61,6 @@ export class Scene {
 
 		this.renderer.setSize(this.width, this.height);
 		document.body.appendChild(this.renderer.domElement);
-
-		this.chunkManager = new ChunkManager(this.scene, this.dojo);
-
-		this.tileSystem = new TileSystem(this.dojo, this.chunkManager);
-		this.tileSystem.setupTileSystem();
 
 		this.setupCamera();
 		this.setupControls();
@@ -81,6 +78,12 @@ export class Scene {
 		this.createContextMenu();
 
 		this.animate();
+
+		// Load initial chunks
+		this.chunkManager.update(this.camera.position);
+
+		this.tileSystem = new TileSystem(this.dojo, this.chunkManager);
+		this.tileSystem.setupTileSystem();
 	}
 
 	private setupControls() {

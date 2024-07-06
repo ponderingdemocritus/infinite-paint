@@ -38,16 +38,6 @@ export class ChunkManager {
 				square.position.set(x + 0.5, 0, z + 0.5);
 				square.rotation.x = -Math.PI / 2;
 
-				const tileEntityId = getEntityIdFromKeys([BigInt(worldX), BigInt(worldZ)]);
-				const tileComponent = getComponentValue(this.dojo.clientComponents.Tile, tileEntityId);
-
-				if (tileComponent && tileComponent.color) {
-					console.log(`Tile at (${worldX}, ${worldZ}) has color: ${tileComponent.color}`);
-
-					square.material.color.setHex(parseInt(shortString.decodeShortString(tileComponent.color.toString())));
-					square.material.opacity = 0.5;
-				}
-
 				chunk.add(square);
 				this.squares[worldX] = this.squares[worldX] || [];
 				this.squares[worldX][worldZ] = square;
