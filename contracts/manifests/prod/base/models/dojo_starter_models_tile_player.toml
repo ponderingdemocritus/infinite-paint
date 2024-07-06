@@ -1,0 +1,20 @@
+kind = "DojoModel"
+class_hash = "0x20f3f2eb9a1e5c1a7e8b4775f361ff21105c5ad2d4a47cbff15959d87fe5faf"
+original_class_hash = "0x20f3f2eb9a1e5c1a7e8b4775f361ff21105c5ad2d4a47cbff15959d87fe5faf"
+abi = "manifests/prod/abis/base/models/dojo_starter_models_tile_player.json"
+name = "dojo_starter::models::tile::player"
+
+[[members]]
+name = "owner"
+type = "ContractAddress"
+key = true
+
+[[members]]
+name = "last_action"
+type = "u64"
+key = false
+
+[[members]]
+name = "points"
+type = "u64"
+key = false

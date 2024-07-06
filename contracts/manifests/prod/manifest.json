@@ -1000,12 +1000,12 @@
       }
     ],
     "address": "0xb4079627ebab1cd3cf9fd075dda1ad2454a7a448bf659591f259efa2519b18",
-    "transaction_hash": "0x3a729aa09b4ad351fbc724f94c6d599037a53d7d9b5a182097a60fb09d0486c",
-    "block_number": 25,
+    "transaction_hash": "0x3307c415a6bf81a370541dc5403584085a07f8175bea63af2aa4b477fb9cffa",
+    "block_number": 111,
     "seed": "dojo_starter",
     "metadata": {
-      "profile_name": "dev",
-      "rpc_url": "http://localhost:5050/"
+      "profile_name": "prod",
+      "rpc_url": "https://api.cartridge.gg/x/color-2/katana"
     },
     "name": "dojo::world::world"
   },
@@ -1195,9 +1195,7 @@
         }
       ],
       "reads": [],
-      "writes": [
-        "Tile"
-      ],
+      "writes": [],
       "computed": [],
       "init_calldata": [],
       "name": "dojo_starter::systems::actions::actions"

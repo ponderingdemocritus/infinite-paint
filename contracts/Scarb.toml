@@ -12,7 +12,7 @@ spawn = "./scripts/spawn.sh"
 move = "./scripts/move.sh"
 
 [dependencies]
-dojo = { git = "https://github.com/dojoengine/dojo", tag = "v0.7.1" }
+dojo = { git = "https://github.com/dojoengine/dojo", tag = "v0.7.3" }
 
 [[target.dojo]]
 
@@ -25,6 +25,12 @@ rpc_url = "http://localhost:5050/"
 account_address = "0xb3ff441a68610b30fd5e2abbf3a1548eb6ba6f3559f2862bf2dc757e5828ca"
 private_key = "0x2bbf4f9fd0bbb2e60b0316c1fe0b76cf7a4d0198bd493ced9b8df2a3a24d68a"
 #world_address = "0xb4079627ebab1cd3cf9fd075dda1ad2454a7a448bf659591f259efa2519b18"  # Uncomment and update this line with your world address.
+
+[profile.prod.tool.dojo.env]
+rpc_url = "https://api.cartridge.gg/x/color-2/katana"
+account_address = "0x17ce6389066a90865d171faeca2b553e66f07186dd9d49beddcc7a331ce93cf"
+private_key = "0x3352a3aa368bf61e6d3b53f39e81cd95c413521cf51d8340e2a5ddb29bcd0ab"
+world_address = "0xb4079627ebab1cd3cf9fd075dda1ad2454a7a448bf659591f259efa2519b18"
 
 [tool.dojo.world]
 name = "Dojo starter"

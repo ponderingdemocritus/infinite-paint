@@ -43,6 +43,7 @@ export class ChunkManager {
 
 				if (tileComponent && tileComponent.color) {
 					console.log(`Tile at (${worldX}, ${worldZ}) has color: ${tileComponent.color}`);
+
 					square.material.color.setHex(parseInt(shortString.decodeShortString(tileComponent.color.toString())));
 					square.material.opacity = 0.5;
 				}

@@ -38,8 +38,11 @@ const App: React.FC = () => {
 			<div className={`fixed top-0 left-0 right-0 flex justify-between items-start p-4 text-green-500 text-xl -skew-y-3`}>
 				<div className='bg-black bg-opacity-50 p-3 rounded-lg'>
 					<div>Player: {shortenHex(account.address)}</div>
-					<div>Next Action: {countdown !== null ? `${countdown}s` : 'Ready'}</div>
+					{/* <div>Next Action: {countdown !== null ? `${countdown}s` : 'Ready'}</div> */}
 				</div>
+			</div>
+			<div className='absolute bottom-8 left-8 text-6xl text-green-500 -skew-y-3'>
+				<div> {countdown !== null ? `${countdown}s` : 'Ready'}</div>
 			</div>
 		</>
 	);

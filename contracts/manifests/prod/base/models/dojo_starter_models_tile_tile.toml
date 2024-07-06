@@ -1,0 +1,25 @@
+kind = "DojoModel"
+class_hash = "0x57f209f3e86eac7eb7d6a06b6e0c4fb285771faa25b4bb573690376acc59a0f"
+original_class_hash = "0x57f209f3e86eac7eb7d6a06b6e0c4fb285771faa25b4bb573690376acc59a0f"
+abi = "manifests/prod/abis/base/models/dojo_starter_models_tile_tile.json"
+name = "dojo_starter::models::tile::tile"
+
+[[members]]
+name = "x"
+type = "u32"
+key = true
+
+[[members]]
+name = "y"
+type = "u32"
+key = true
+
+[[members]]
+name = "color"
+type = "felt252"
+key = false
+
+[[members]]
+name = "owner"
+type = "ContractAddress"
+key = false
