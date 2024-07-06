@@ -19,7 +19,7 @@ const App: React.FC = () => {
 		if (player?.last_action) {
 			const updateCountdown = () => {
 				const now = Math.floor(Date.now() / 1000);
-				const endTime = Number(player.last_action) + 60; // Add 60 seconds
+				const endTime = Number(player.last_action) + 15; // Add 60 seconds
 				const remaining = endTime - now;
 				setCountdown(remaining > 0 ? remaining : 0);
 			};
