@@ -11,7 +11,7 @@ export const OFFSET = 5000;
 export class ChunkManager {
 	loadedChunks: Map<string, THREE.Group> = new Map();
 	chunkSize = 10;
-	chunkLoadDistance = 0;
+	chunkLoadDistance = 1;
 
 	private squares: THREE.Mesh[][] = [];
 
@@ -19,11 +19,23 @@ export class ChunkManager {
 
 	coordinates: [number, number][];
 
+	private lastUpdatePosition: THREE.Vector3 = new THREE.Vector3();
+	private updateThreshold: number = 8; // Distance to move before updating
+	private chunkUpdateInterval: number = 100; // Milliseconds between chunk updates
+	private lastChunkUpdateTime: number = 0;
+
 	constructor(private scene: THREE.Scene, private dojo: SetupResult) {}
 
 	public update(cameraPosition: THREE.Vector3) {
-		this.loadChunksAroundCamera(cameraPosition);
-		this.subscribeToChunkState();
+		const currentTime = performance.now();
+		if (
+			currentTime - this.lastChunkUpdateTime > this.chunkUpdateInterval &&
+			cameraPosition.distanceTo(this.lastUpdatePosition) > this.updateThreshold
+		) {
+			this.loadChunksAroundCamera(cameraPosition);
+			this.lastUpdatePosition.copy(cameraPosition);
+			this.lastChunkUpdateTime = currentTime;
+		}
 	}
 
 	private createChunk(chunkX: number, chunkZ: number): THREE.Group {
@@ -80,55 +92,56 @@ export class ChunkManager {
 		const cameraChunkX = Math.floor(cameraPosition.x / this.chunkSize);
 		const cameraChunkZ = Math.floor(cameraPosition.z / this.chunkSize);
 
-		this.coordinates = [];
+		this.updateCoordinates(cameraChunkX, cameraChunkZ);
+		this.loadUnloadChunks(cameraChunkX, cameraChunkZ);
+		this.subscribeToChunkState();
+	}
 
+	private updateCoordinates(cameraChunkX: number, cameraChunkZ: number) {
+		this.coordinates = [];
+		for (let dx = -this.chunkLoadDistance; dx <= this.chunkLoadDistance; dx++) {
+			for (let dz = -this.chunkLoadDistance; dz <= this.chunkLoadDistance; dz++) {
+				const chunkX = cameraChunkX + dx;
+				const chunkZ = cameraChunkZ + dz;
+				this.addChunkCoordinates(chunkX, chunkZ);
+			}
+		}
+	}
+
+	private addChunkCoordinates(chunkX: number, chunkZ: number) {
+		for (let x = 0; x < this.chunkSize; x++) {
+			for (let z = 0; z < this.chunkSize; z++) {
+				const worldX = chunkX * this.chunkSize + x + OFFSET;
+				const worldZ = chunkZ * this.chunkSize + z + OFFSET;
+				this.coordinates.push([worldX, worldZ]);
+			}
+		}
+	}
+
+	private loadUnloadChunks(cameraChunkX: number, cameraChunkZ: number) {
 		for (let dx = -this.chunkLoadDistance; dx <= this.chunkLoadDistance; dx++) {
 			for (let dz = -this.chunkLoadDistance; dz <= this.chunkLoadDistance; dz++) {
 				const chunkX = cameraChunkX + dx;
 				const chunkZ = cameraChunkZ + dz;
 				const chunkKey = `${chunkX},${chunkZ}`;
 
-				for (let x = 0; x < this.chunkSize; x++) {
-					for (let z = 0; z < this.chunkSize; z++) {
-						const worldX = chunkX * this.chunkSize + x + OFFSET;
-						const worldZ = chunkZ * this.chunkSize + z + OFFSET;
-
-						this.coordinates.push([worldX, worldZ]);
-					}
-				}
-
 				if (!this.loadedChunks.has(chunkKey)) {
 					const chunk = this.createChunk(chunkX, chunkZ);
 					this.scene.add(chunk);
-
 					this.loadedChunks.set(chunkKey, chunk);
 				}
 			}
 		}
 
+		// Unload distant chunks
 		for (const [chunkKey, chunk] of this.loadedChunks.entries()) {
 			const [chunkX, chunkZ] = chunkKey.split(',').map(Number);
 			const distance = Math.max(Math.abs(chunkX - cameraChunkX), Math.abs(chunkZ - cameraChunkZ));
 
 			if (distance > this.chunkLoadDistance + 1) {
-				// Remove chunk from scene and loadedChunks
 				this.scene.remove(chunk);
 				this.loadedChunks.delete(chunkKey);
-
-				// Remove coordinates for this chunk
-				for (let x = 0; x < this.chunkSize; x++) {
-					for (let z = 0; z < this.chunkSize; z++) {
-						const worldX = chunkX * this.chunkSize + x + OFFSET;
-						const worldZ = chunkZ * this.chunkSize + z + OFFSET;
-						// const index = this.coordinates.findIndex((coord) => coord[0] === worldX && coord[1] === worldZ);
-						// if (index !== -1) {
-						// 	this.coordinates.splice(index, 1);
-						// }
-					}
-				}
 			}
 		}
-
-		// this.subscribeToChunkState();
 	}
 }
