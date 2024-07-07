@@ -32,10 +32,10 @@ export class TileSystem {
 			// Swap X and Z when calculating the index
 			const tileIndex = localZ + localX * this.chunkManager.chunkSize;
 
-			console.log(`World coordinates: (${x}, ${y})`);
-			console.log(`Chunk coordinates: (${chunkX}, ${chunkZ})`);
-			console.log(`Local coordinates: (${localX}, ${localZ})`);
-			console.log(`Updating tile at index ${tileIndex}`);
+			// console.log(`World coordinates: (${x}, ${y})`);
+			// console.log(`Chunk coordinates: (${chunkX}, ${chunkZ})`);
+			// console.log(`Local coordinates: (${localX}, ${localZ})`);
+			// console.log(`Updating tile at index ${tileIndex}`);
 
 			const tile = chunk.children[tileIndex] as THREE.Mesh;
 			if (tile instanceof THREE.Mesh) {

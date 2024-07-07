@@ -22,7 +22,7 @@ echo world : $WORLD_ADDRESS
 echo "---------------------------------------------------------------------------"
 
 # enable system -> models authorizations
-sozo --profile prod auth grant --world $WORLD_ADDRESS --wait writer \
+sozo auth grant --world $WORLD_ADDRESS --wait writer \
   Tile,dojo_starter::systems::actions::actions\
   Player,dojo_starter::systems::actions::actions\
   >/dev/null

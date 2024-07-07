@@ -3,6 +3,8 @@ import { SetupResult } from '../dojo/generated/setup';
 import * as THREE from 'three';
 import { getComponentValue } from '@dojoengine/recs';
 import { shortString } from 'starknet';
+import { Subscription } from '@dojoengine/torii-client';
+import { getSyncEntities } from '@dojoengine/state';
 
 export const OFFSET = 5000;
 
@@ -12,6 +14,10 @@ export class ChunkManager {
 	chunkLoadDistance = 2;
 
 	private squares: THREE.Mesh[][] = [];
+
+	subscription: Subscription | null = null;
+
+	coordinates: string[];
 
 	constructor(private scene: THREE.Scene, private dojo: SetupResult) {}
 
@@ -29,6 +35,8 @@ export class ChunkManager {
 			opacity: 0,
 		});
 
+		const coordinates = [];
+
 		// Create squares
 		for (let x = 0; x < this.chunkSize; x++) {
 			for (let z = 0; z < this.chunkSize; z++) {
@@ -41,8 +49,14 @@ export class ChunkManager {
 				chunk.add(square);
 				this.squares[worldX] = this.squares[worldX] || [];
 				this.squares[worldX][worldZ] = square;
+
+				coordinates.push([worldX, worldZ]);
 			}
 		}
+
+		this.coordinates = coordinates.flatMap((coord) => getEntityIdFromKeys([BigInt(coord[0]), BigInt(coord[1])]).toString());
+
+		console.log(this.coordinates);
 
 		const greenLineMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 }); // Green color
 
@@ -57,6 +71,19 @@ export class ChunkManager {
 		chunk.position.set(chunkX * this.chunkSize, 0, chunkZ * this.chunkSize);
 
 		return chunk;
+	}
+
+	async subscribeToChunkState() {
+		const sub = await getSyncEntities(this.dojo.toriiClient, this.dojo.contractComponents as any, {
+			Keys: {
+				keys: [],
+				models: [],
+				pattern_matching: 'VariableLen',
+			},
+		});
+
+		this.subscription = sub;
+		console.log(this.subscription);
 	}
 
 	private loadChunksAroundCamera(cameraPosition: THREE.Vector3) {

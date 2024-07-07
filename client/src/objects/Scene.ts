@@ -7,6 +7,7 @@ import { shortString } from 'starknet';
 import { ColorRepresentation } from 'three';
 import { ChunkManager, OFFSET } from './ChunkManager';
 import { TileSystem } from './TileSystem';
+import { getSyncEntities } from '@dojoengine/state';
 
 export class Scene {
 	private scene!: THREE.Scene;
@@ -70,6 +71,7 @@ export class Scene {
 			'change',
 			_.throttle(() => {
 				this.chunkManager.update(this.camera.position);
+				// this.chunkManager.subscribeToChunkState();
 			}, 100)
 		);
 
@@ -81,6 +83,8 @@ export class Scene {
 
 		// Load initial chunks
 		this.chunkManager.update(this.camera.position);
+
+		// this.chunkManager.subscribeToChunkState();
 
 		this.tileSystem = new TileSystem(this.dojo, this.chunkManager);
 		this.tileSystem.setupTileSystem();
@@ -180,6 +184,14 @@ export class Scene {
 				// material.color.setHex(this.selectedColor as number);
 				// material.opacity = 0.5;
 
+				this.chunkManager.subscription = await getSyncEntities(this.dojo.toriiClient, this.dojo.contractComponents as any, {
+					Keys: {
+						keys: [worldX.toString(), worldZ.toString()],
+						models: [],
+						pattern_matching: 'FixedLen',
+					},
+				});
+
 				await this.dojo.client.actions.paint({
 					account: this.dojo.burnerManager.account!,
 					x: worldX.toString(),
@@ -248,7 +260,7 @@ export class Scene {
 				const worldX = chunkX * this.chunkSize + localX + OFFSET;
 				const worldZ = chunkZ * this.chunkSize + localZ + OFFSET;
 
-				console.log(`Hovered square world coordinates: x=${worldX}, z=${worldZ}`);
+				// console.log(`Hovered square world coordinates: x=${worldX}, z=${worldZ}`);
 
 				break;
 			}

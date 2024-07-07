@@ -14,7 +14,7 @@ async function init() {
 
 	root.render(
 		<div className='bg-black text-green-400 h-screen w-screen flex justify-center'>
-			<div className='self-center'>Generating world...</div>
+			<div className='self-center'>Generating</div>
 		</div>
 	);
 
