@@ -2,12 +2,13 @@ import * as THREE from 'three';
 import { SetupResult } from '../dojo/generated/setup';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import _ from 'lodash';
-import { shortString } from 'starknet';
+import { num, shortString } from 'starknet';
 
 import { ColorRepresentation } from 'three';
 import { ChunkManager, OFFSET } from './ChunkManager';
 import { TileSystem } from './TileSystem';
 import { getSyncEntities } from '@dojoengine/state';
+import { getEntityIdFromKeys } from '@dojoengine/utils';
 
 export class Scene {
 	private scene!: THREE.Scene;
@@ -27,8 +28,6 @@ export class Scene {
 
 	private cameraDistance = Math.sqrt(2 * 20 * 20); // Maintain the same distance
 	private cameraAngle = 60 * (Math.PI / 180); // 75 degrees in radians
-
-	private chunkSize = 10; // Size of each chunk
 
 	private lerpFactor = 0.9;
 
@@ -71,7 +70,6 @@ export class Scene {
 			'change',
 			_.throttle(() => {
 				this.chunkManager.update(this.camera.position);
-				// this.chunkManager.subscribeToChunkState();
 			}, 100)
 		);
 
@@ -83,8 +81,6 @@ export class Scene {
 
 		// Load initial chunks
 		this.chunkManager.update(this.camera.position);
-
-		// this.chunkManager.subscribeToChunkState();
 
 		this.tileSystem = new TileSystem(this.dojo, this.chunkManager);
 		this.tileSystem.setupTileSystem();
@@ -170,27 +166,17 @@ export class Scene {
 				const localZ = Math.floor(intersect.point.z - chunkPosition.z);
 
 				// Calculate chunk coordinates
-				const chunkX = Math.floor(chunkPosition.x / this.chunkSize);
-				const chunkZ = Math.floor(chunkPosition.z / this.chunkSize);
+				const chunkX = Math.floor(chunkPosition.x / this.chunkManager.chunkSize);
+				const chunkZ = Math.floor(chunkPosition.z / this.chunkManager.chunkSize);
 
 				// Calculate world coordinates
-				const worldX = chunkX * this.chunkSize + localX + OFFSET;
-				const worldZ = chunkZ * this.chunkSize + localZ + OFFSET;
-
-				console.log(`Clicked square world coordinates: x=${worldX}, z=${worldZ}`);
+				const worldX = chunkX * this.chunkManager.chunkSize + localX + OFFSET;
+				const worldZ = chunkZ * this.chunkManager.chunkSize + localZ + OFFSET;
 
 				// Change the color and opacity of the clicked square
 				// const material = intersect.object.material as THREE.MeshBasicMaterial;
 				// material.color.setHex(this.selectedColor as number);
 				// material.opacity = 0.5;
-
-				this.chunkManager.subscription = await getSyncEntities(this.dojo.toriiClient, this.dojo.contractComponents as any, {
-					Keys: {
-						keys: [worldX.toString(), worldZ.toString()],
-						models: [],
-						pattern_matching: 'FixedLen',
-					},
-				});
 
 				await this.dojo.client.actions.paint({
 					account: this.dojo.burnerManager.account!,
@@ -254,11 +240,11 @@ export class Scene {
 				const localX = Math.floor(intersect.point.x - chunkPosition.x);
 				const localZ = Math.floor(intersect.point.z - chunkPosition.z);
 
-				const chunkX = Math.floor(chunkPosition.x / this.chunkSize);
-				const chunkZ = Math.floor(chunkPosition.z / this.chunkSize);
+				const chunkX = Math.floor(chunkPosition.x / this.chunkManager.chunkSize);
+				const chunkZ = Math.floor(chunkPosition.z / this.chunkManager.chunkSize);
 
-				const worldX = chunkX * this.chunkSize + localX + OFFSET;
-				const worldZ = chunkZ * this.chunkSize + localZ + OFFSET;
+				const worldX = chunkX * this.chunkManager.chunkSize + localX + OFFSET;
+				const worldZ = chunkZ * this.chunkManager.chunkSize + localZ + OFFSET;
 
 				// console.log(`Hovered square world coordinates: x=${worldX}, z=${worldZ}`);
 
