@@ -11,6 +11,8 @@ export class TileSystem {
 		defineComponentSystem(this.dojo.world, this.dojo.clientComponents.Tile, (update) => {
 			const { value } = update;
 
+			console.log(value);
+
 			this.updateTile(value[0]?.x || 0, value[0]?.y || 0, value[0]?.color.toString() || '');
 		});
 	}

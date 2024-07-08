@@ -9,6 +9,7 @@ import { ChunkManager, OFFSET } from './ChunkManager';
 import { TileSystem } from './TileSystem';
 import { getSyncEntities } from '@dojoengine/state';
 import { getEntityIdFromKeys } from '@dojoengine/utils';
+import { Has, HasValue, defineSystem } from '@dojoengine/recs';
 
 export class Scene {
 	private scene!: THREE.Scene;
@@ -23,13 +24,14 @@ export class Scene {
 
 	private controls!: OrbitControls;
 
+	private spinner: HTMLDivElement | null = null;
+
 	private raycaster: THREE.Raycaster;
 	private mouse: THREE.Vector2;
-
-	private cameraDistance = Math.sqrt(2 * 20 * 20); // Maintain the same distance
-	private cameraAngle = 60 * (Math.PI / 180); // 75 degrees in radians
-
-	private lerpFactor = 0.9;
+	private minCameraDistance = Math.sqrt(2 * 20 * 20);
+	private maxCameraDistance = Math.sqrt(2 * 40 * 20);
+	private cameraDistance = this.minCameraDistance;
+	private cameraAngle = 90 * (Math.PI / 180); // 75 degrees in radians
 
 	private dojo: SetupResult;
 
@@ -91,9 +93,11 @@ export class Scene {
 		this.controls.enableDamping = true;
 		this.controls.dampingFactor = 0.05;
 		this.controls.screenSpacePanning = true;
-		this.controls.enableZoom = false; // Disable zooming
-		this.controls.enableRotate = false; // Disable rotation
+		this.controls.enableZoom = true; // Enable zooming
+		this.controls.enableRotate = false;
 		this.controls.enablePan = true;
+		this.controls.minDistance = this.minCameraDistance;
+		this.controls.maxDistance = this.maxCameraDistance;
 	}
 
 	private setupCamera() {
@@ -117,22 +121,20 @@ export class Scene {
 
 		if (this.controls) {
 			this.controls.update();
-
-			const currentPosition = this.camera.position;
-			const targetPosition = this.controls.target;
-			const direction = new THREE.Vector3().subVectors(currentPosition, targetPosition).normalize();
-			const distance = this.cameraDistance;
-			const height = Math.sin(this.cameraAngle) * distance;
-			const horizontalDistance = Math.cos(this.cameraAngle) * distance;
-
-			const newPosition = new THREE.Vector3(
-				targetPosition.x + direction.x * horizontalDistance,
-				height,
-				targetPosition.z + direction.z * horizontalDistance
-			);
-
-			this.camera.position.lerp(newPosition, this.lerpFactor);
-			this.camera.lookAt(this.controls.target);
+			// const currentPosition = this.camera.position;
+			// const targetPosition = this.controls.target;
+			// const direction = new THREE.Vector3().subVectors(currentPosition, targetPosition).normalize();
+			// // Update cameraDistance based on the current distance from the target
+			// this.cameraDistance = currentPosition.distanceTo(targetPosition);
+			// const height = Math.sin(this.cameraAngle) * this.cameraDistance;
+			// const horizontalDistance = Math.cos(this.cameraAngle) * this.cameraDistance;
+			// const newPosition = new THREE.Vector3(
+			// 	targetPosition.x + direction.x * horizontalDistance,
+			// 	height,
+			// 	targetPosition.z + direction.z * horizontalDistance
+			// );
+			// this.camera.position.lerp(newPosition, this.lerpFactor);
+			// this.camera.lookAt(this.controls.target);
 		}
 
 		this.render();
@@ -178,15 +180,101 @@ export class Scene {
 				// material.color.setHex(this.selectedColor as number);
 				// material.opacity = 0.5;
 
-				await this.dojo.client.actions.paint({
-					account: this.dojo.burnerManager.account!,
-					x: worldX.toString(),
-					y: worldZ.toString(),
-					color: shortString.encodeShortString(this.selectedColor.toString()),
-				});
+				this.showSpinner(event.clientX, event.clientY);
 
+				try {
+					await this.dojo.client.actions.paint({
+						account: this.dojo.burnerManager.account,
+						x: worldX.toString(),
+						y: worldZ.toString(),
+						color: shortString.encodeShortString(this.selectedColor.toString()),
+					});
+
+					await new Promise<void>((resolve) => {
+						defineSystem(
+							this.dojo.world,
+							[Has(this.dojo.contractComponents.Tile), HasValue(this.dojo.contractComponents.Tile, { x: worldX, y: worldZ })],
+							() => {
+								console.log('Tile updated');
+								resolve();
+							}
+						);
+					});
+				} finally {
+					// Hide spinner
+					this.hideSpinner();
+				}
 				break;
 			}
+		}
+	}
+
+	private showSpinner(x: number, y: number) {
+		if (!this.spinner) {
+			this.spinner = document.createElement('div');
+			this.spinner.style.position = 'absolute';
+			this.spinner.style.width = '40px';
+			this.spinner.style.height = '40px';
+			this.spinner.style.perspective = '120px';
+			document.body.appendChild(this.spinner);
+
+			const cube = document.createElement('div');
+			cube.style.width = '100%';
+			cube.style.height = '100%';
+			cube.style.position = 'relative';
+			cube.style.transformStyle = 'preserve-3d';
+			cube.style.animation = 'spin 1.5s linear infinite';
+			this.spinner.appendChild(cube);
+
+			const colors = Array(4).fill(this.selectedColor.toString(16).padStart(6, '0').replace(/^/, '#'));
+			['front', 'back', 'right', 'left', 'top', 'bottom'].forEach((face, index) => {
+				const element = document.createElement('div');
+				element.style.position = 'absolute';
+				element.style.width = '100%';
+				element.style.height = '100%';
+				element.style.background = colors[index % colors.length];
+				element.style.opacity = '0.8';
+				element.style.border = `2px solid ${this.selectedColor.toString(16).padStart(6, '0').replace(/^/, '#')}`;
+				element.style.transform = this.getFaceTransform(face);
+				cube.appendChild(element);
+			});
+
+			const style = document.createElement('style');
+			style.textContent = `
+				@keyframes spin {
+					0% { transform: rotateX(0deg) rotateY(0deg); }
+					100% { transform: rotateX(360deg) rotateY(360deg); }
+				}
+			`;
+			document.head.appendChild(style);
+		}
+
+		this.spinner.style.display = 'block';
+		this.spinner.style.left = `${x - 20}px`;
+		this.spinner.style.top = `${y - 20}px`;
+	}
+
+	private getFaceTransform(face: string): string {
+		switch (face) {
+			case 'front':
+				return 'rotateY(0deg) translateZ(20px)';
+			case 'back':
+				return 'rotateY(180deg) translateZ(20px)';
+			case 'right':
+				return 'rotateY(90deg) translateZ(20px)';
+			case 'left':
+				return 'rotateY(-90deg) translateZ(20px)';
+			case 'top':
+				return 'rotateX(90deg) translateZ(20px)';
+			case 'bottom':
+				return 'rotateX(-90deg) translateZ(20px)';
+			default:
+				return '';
+		}
+	}
+	private hideSpinner() {
+		if (this.spinner) {
+			this.spinner.style.display = 'none';
 		}
 	}
 
@@ -198,7 +286,6 @@ export class Scene {
 
 		const intersects = this.raycaster.intersectObjects(this.scene.children, true);
 
-		// Reset previously hovered mesh
 		if (this.hoveredMesh && this.originalMaterial) {
 			this.hoveredMesh.material = this.originalMaterial;
 			this.hoveredMesh = null;
@@ -220,10 +307,9 @@ export class Scene {
 				});
 				mesh.material = hoverMaterial;
 
-				// Add pulsing effect
 				const pulseAnimation = () => {
 					if (this.hoveredMesh === mesh) {
-						const scale = 1 + Math.sin(Date.now() * 0.03) * 0.05; // Adjust speed and intensity here
+						const scale = 1 + Math.sin(Date.now() * 0.03) * 0.05;
 						mesh.scale.set(scale, scale, scale);
 						requestAnimationFrame(pulseAnimation);
 					} else {
@@ -231,22 +317,6 @@ export class Scene {
 					}
 				};
 				pulseAnimation();
-
-				// Calculate and log coordinates (optional)
-				const chunk = mesh.parent as THREE.Group;
-				const chunkPosition = new THREE.Vector3();
-				chunk.getWorldPosition(chunkPosition);
-
-				const localX = Math.floor(intersect.point.x - chunkPosition.x);
-				const localZ = Math.floor(intersect.point.z - chunkPosition.z);
-
-				const chunkX = Math.floor(chunkPosition.x / this.chunkManager.chunkSize);
-				const chunkZ = Math.floor(chunkPosition.z / this.chunkManager.chunkSize);
-
-				const worldX = chunkX * this.chunkManager.chunkSize + localX + OFFSET;
-				const worldZ = chunkZ * this.chunkManager.chunkSize + localZ + OFFSET;
-
-				// console.log(`Hovered square world coordinates: x=${worldX}, z=${worldZ}`);
 
 				break;
 			}
