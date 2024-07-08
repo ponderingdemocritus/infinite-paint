@@ -31,7 +31,7 @@ export class Scene {
 	private minCameraDistance = Math.sqrt(2 * 20 * 20);
 	private maxCameraDistance = Math.sqrt(2 * 40 * 20);
 	private cameraDistance = this.minCameraDistance;
-	private cameraAngle = 90 * (Math.PI / 180); // 75 degrees in radians
+	private cameraAngle = 90 * (Math.PI / 180);
 
 	private dojo: SetupResult;
 
@@ -39,7 +39,7 @@ export class Scene {
 	private height = window.innerHeight;
 
 	private contextMenu!: HTMLDivElement;
-	private selectedColor: ColorRepresentation = 0x00ff00; // Default green color
+	private selectedColor: ColorRepresentation = 0x00ff00;
 
 	constructor(dojoContext: SetupResult) {
 		this.dojo = dojoContext;
@@ -121,20 +121,6 @@ export class Scene {
 
 		if (this.controls) {
 			this.controls.update();
-			// const currentPosition = this.camera.position;
-			// const targetPosition = this.controls.target;
-			// const direction = new THREE.Vector3().subVectors(currentPosition, targetPosition).normalize();
-			// // Update cameraDistance based on the current distance from the target
-			// this.cameraDistance = currentPosition.distanceTo(targetPosition);
-			// const height = Math.sin(this.cameraAngle) * this.cameraDistance;
-			// const horizontalDistance = Math.cos(this.cameraAngle) * this.cameraDistance;
-			// const newPosition = new THREE.Vector3(
-			// 	targetPosition.x + direction.x * horizontalDistance,
-			// 	height,
-			// 	targetPosition.z + direction.z * horizontalDistance
-			// );
-			// this.camera.position.lerp(newPosition, this.lerpFactor);
-			// this.camera.lookAt(this.controls.target);
 		}
 
 		this.render();
