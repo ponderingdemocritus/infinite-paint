@@ -1,7 +1,7 @@
 use starknet::ContractAddress;
 use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
 
-#[derive(Copy, Drop, Serde)]
+#[derive(Copy, Drop, Serde,)]
 #[dojo::model]
 struct Tile {
     #[key]
