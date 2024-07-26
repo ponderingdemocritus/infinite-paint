@@ -8,6 +8,7 @@ import { world } from './world';
 import { setupWorld } from './generated';
 import { Account, WeierstrassSignatureType } from 'starknet';
 import { BurnerManager } from '@dojoengine/create-burner';
+import { getEntityIdFromKeys } from '@dojoengine/utils';
 
 export type SetupResult = Awaited<ReturnType<typeof setup>>;
 
@@ -22,6 +23,8 @@ export async function setup({ ...config }: DojoConfig) {
 
 	// create contract components
 	const contractComponents = defineContractComponents(world);
+
+	console.log(config.manifest);
 
 	// create client components
 	const clientComponents = createClientComponents({ contractComponents });
@@ -51,13 +54,15 @@ export async function setup({ ...config }: DojoConfig) {
 		console.error(e);
 	}
 
-	const sync = await getSyncEntities(toriiClient, contractComponents as any, {
-		Keys: {
-			keys: [burnerManager.account.address],
-			models: ['Player'],
-			pattern_matching: 'VariableLen',
+	const sync = await getSyncEntities(toriiClient, contractComponents as any, [
+		{
+			Keys: {
+				keys: [BigInt(burnerManager.account.address).toString()],
+				models: ['dojo_starter-Player'],
+				pattern_matching: 'FixedLen',
+			},
 		},
-	});
+	]);
 
 	return {
 		client,

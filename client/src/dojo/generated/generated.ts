@@ -15,11 +15,15 @@ export async function setupWorld(provider: DojoProvider) {
 	function actions() {
 		const create_player = async ({ account }: { account: AccountInterface }) => {
 			try {
-				return await provider.execute(account, {
-					contractName: 'actions',
-					entrypoint: 'create_player',
-					calldata: [],
-				});
+				return await provider.execute(
+					account,
+					{
+						contractName: 'actions',
+						entrypoint: 'create_player',
+						calldata: [],
+					},
+					'dojo_starter'
+				);
 			} catch (error) {
 				console.error('Error executing spawn:', error);
 				throw error;
@@ -27,11 +31,15 @@ export async function setupWorld(provider: DojoProvider) {
 		};
 		const paint = async ({ account, x, y, color }: { account: AccountInterface; x: string; y: string; color: string }) => {
 			try {
-				return await provider.execute(account, {
-					contractName: 'actions',
-					entrypoint: 'paint',
-					calldata: [x, y, color],
-				});
+				return await provider.execute(
+					account,
+					{
+						contractName: 'actions',
+						entrypoint: 'paint',
+						calldata: [x, y, color],
+					},
+					'dojo_starter'
+				);
 			} catch (error) {
 				console.error('Error executing spawn:', error);
 				throw error;

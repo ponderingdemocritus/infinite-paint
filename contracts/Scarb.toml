@@ -1,5 +1,5 @@
 [package]
-cairo-version = "2.6.3"
+cairo-version = "=2.7.0-rc.3"
 name = "dojo_starter"
 version = "0.7.0"
 
@@ -12,7 +12,7 @@ spawn = "./scripts/spawn.sh"
 move = "./scripts/move.sh"
 
 [dependencies]
-dojo = { git = "https://github.com/dojoengine/dojo", tag = "v0.7.3" }
+dojo = { git = "https://github.com/dojoengine/dojo", tag = "v1.0.0-alpha.3" }
 
 [[target.dojo]]
 
@@ -38,6 +38,10 @@ description = "The official Dojo Starter guide, the quickest and most streamline
 cover_uri = "file://assets/cover.png"
 icon_uri = "file://assets/icon.png"
 website = "https://github.com/dojoengine/dojo-starter"
+seed = "dojo_starter"
+
+[tool.dojo.world.namespace]
+default = "dojo_starter"
 
 [tool.dojo.world.socials]
 x = "https://x.com/ohayo_dojo"

@@ -1,0 +1,2 @@
+tag = "dojo_starter-actions"
+writes = ["dojo_starter-Tile", "dojo_starter-Player"]

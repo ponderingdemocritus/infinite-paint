@@ -8,6 +8,4 @@ sozo build
 echo "----- Migrating World -----"
 sozo migrate apply
 
-sh scripts/default_auth.sh
-
-torii --world 0xb4079627ebab1cd3cf9fd075dda1ad2454a7a448bf659591f259efa2519b18 --allowed-origins "*" --index-pending
+torii --world 0x70835f8344647b1e573fe7aeccbf044230089eb19624d3c7dea4080f5dcb025 --allowed-origins "*" --index-pending

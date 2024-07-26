@@ -5,20 +5,20 @@ use dojo::world::{IWorldDispatcher, IWorldDispatcherTrait};
 #[dojo::model]
 struct Tile {
     #[key]
-    x: u32,
+    pub x: u32,
     #[key]
-    y: u32,
-    color: felt252,
-    owner: ContractAddress,
+    pub y: u32,
+    pub color: felt252,
+    pub owner: ContractAddress,
 }
 
 #[derive(Copy, Drop, Serde)]
 #[dojo::model]
 struct Player {
     #[key]
-    owner: ContractAddress,
-    last_action: u64,
-    points: u64
+    pub owner: ContractAddress,
+    pub last_action: u64,
+    pub points: u64
 }
 
 #[generate_trait]

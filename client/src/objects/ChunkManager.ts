@@ -80,10 +80,12 @@ export class ChunkManager {
 
 	async subscribeToChunkState() {
 		if (this.subscription) this.subscription.cancel();
-		const sub = await getSyncEntities(this.dojo.toriiClient, this.dojo.contractComponents as any, {
-			// convert to entity id
-			HashedKeys: this.coordinates.map((coord) => getEntityIdFromKeys([BigInt(coord[0]), BigInt(coord[1])]).toString()),
-		});
+		const sub = await getSyncEntities(this.dojo.toriiClient, this.dojo.contractComponents as any, [
+			{
+				// convert to entity id
+				HashedKeys: this.coordinates.map((coord) => getEntityIdFromKeys([BigInt(coord[0]), BigInt(coord[1])]).toString()),
+			},
+		]);
 
 		this.subscription = sub;
 	}
