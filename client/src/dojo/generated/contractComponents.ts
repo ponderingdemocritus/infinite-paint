@@ -12,7 +12,7 @@ export function defineContractComponents(world: World) {
 				{ owner: RecsType.BigInt, last_action: RecsType.BigInt, points: RecsType.BigInt },
 				{
 					metadata: {
-						name: 'dojo_starter-Player',
+						name: 'rps_game-Player',
 						types: ['contractaddress', 'u64', 'u64'],
 						customTypes: [],
 					},
@@ -25,7 +25,7 @@ export function defineContractComponents(world: World) {
 				{ x: RecsType.Number, y: RecsType.Number, color: RecsType.BigInt, owner: RecsType.BigInt },
 				{
 					metadata: {
-						name: 'dojo_starter-Tile',
+						name: 'rps_game-Tile',
 						types: ['u32', 'u32', 'felt252', 'contractaddress'],
 						customTypes: [],
 					},

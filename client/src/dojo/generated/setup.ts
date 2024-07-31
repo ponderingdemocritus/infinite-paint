@@ -58,7 +58,7 @@ export async function setup({ ...config }: DojoConfig) {
 		{
 			Keys: {
 				keys: [BigInt(burnerManager.account.address).toString()],
-				models: ['dojo_starter-Player'],
+				models: ['rps_game-Player'],
 				pattern_matching: 'FixedLen',
 			},
 		},

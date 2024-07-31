@@ -10,7 +10,7 @@ trait IActions {
 mod actions {
     use super::{IActions};
     use starknet::{ContractAddress, get_caller_address, get_block_timestamp};
-    use dojo_starter::models::{tile::{Tile, TileTrait, Player}};
+    use rps_game::models::{tile::{Tile, TileTrait, Player}};
 
     #[abi(embed_v0)]
     impl ActionsImpl of IActions<ContractState> {

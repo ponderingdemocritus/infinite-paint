@@ -30,7 +30,7 @@ private_key = "0x2bbf4f9fd0bbb2e60b0316c1fe0b76cf7a4d0198bd493ced9b8df2a3a24d68a
 rpc_url = "https://api.cartridge.gg/x/color-4/katana"
 account_address = "0x48d8610aa13f6b3d141e0a96e7362825b2c00ac6c3b9f53204584af8914511f"
 private_key = "0x206a038e062589b34163112ef9ec0ab3146bb8d169b29a527ee87cf86ba9c15"
-world_address = "0x70835f8344647b1e573fe7aeccbf044230089eb19624d3c7dea4080f5dcb025"
+world_address = "0x177292c9085a51b0a5df818f11cbbb6cd18bf6e3c372219746bc8f92e8c83b5"
 
 [profile.prod.tool.dojo.world]
 name = "Dojo starter"
@@ -38,10 +38,10 @@ description = "The official Dojo Starter guide, the quickest and most streamline
 cover_uri = "file://assets/cover.png"
 icon_uri = "file://assets/icon.png"
 website = "https://github.com/dojoengine/dojo-starter"
-seed = "dojo_starter"
+seed = "rps_game"
 
 [profile.prod.tool.dojo.world.namespace]
-default = "dojo_starter"
+default = "rps_game"
 
 [tool.dojo.world]
 name = "Dojo starter"
@@ -49,10 +49,10 @@ description = "The official Dojo Starter guide, the quickest and most streamline
 cover_uri = "file://assets/cover.png"
 icon_uri = "file://assets/icon.png"
 website = "https://github.com/dojoengine/dojo-starter"
-seed = "dojo_starter"
+seed = "rps_game"
 
 [tool.dojo.world.namespace]
-default = "dojo_starter"
+default = "rps_game"
 
 [tool.dojo.world.socials]
 x = "https://x.com/ohayo_dojo"

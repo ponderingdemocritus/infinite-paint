@@ -363,34 +363,30 @@
   },
   {
     "type": "impl",
-    "name": "tileImpl",
-    "interface_name": "dojo_starter::models::tile::Itile"
+    "name": "playerImpl",
+    "interface_name": "rps_game::models::tile::Iplayer"
   },
   {
     "type": "struct",
-    "name": "dojo_starter::models::tile::Tile",
+    "name": "rps_game::models::tile::Player",
     "members": [
-      {
-        "name": "x",
-        "type": "core::integer::u32"
-      },
-      {
-        "name": "y",
-        "type": "core::integer::u32"
-      },
-      {
-        "name": "color",
-        "type": "core::felt252"
-      },
       {
         "name": "owner",
         "type": "core::starknet::contract_address::ContractAddress"
+      },
+      {
+        "name": "last_action",
+        "type": "core::integer::u64"
+      },
+      {
+        "name": "points",
+        "type": "core::integer::u64"
       }
     ]
   },
   {
     "type": "interface",
-    "name": "dojo_starter::models::tile::Itile",
+    "name": "rps_game::models::tile::Iplayer",
     "items": [
       {
         "type": "function",
@@ -398,7 +394,7 @@
         "inputs": [
           {
             "name": "model",
-            "type": "dojo_starter::models::tile::Tile"
+            "type": "rps_game::models::tile::Player"
           }
         ],
         "outputs": [],
@@ -408,7 +404,7 @@
   },
   {
     "type": "event",
-    "name": "dojo_starter::models::tile::tile::Event",
+    "name": "rps_game::models::tile::player::Event",
     "kind": "enum",
     "variants": []
   }

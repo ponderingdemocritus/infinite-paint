@@ -1,0 +1,11 @@
+kind = "DojoContract"
+class_hash = "0x13e68b585d4575d453832903ab0ec67047beea1ef25440044068d40f97a19ed"
+original_class_hash = "0x13e68b585d4575d453832903ab0ec67047beea1ef25440044068d40f97a19ed"
+base_class_hash = "0x0"
+abi = "manifests/prod/base/abis/contracts/rps_game-actions-3af54743.json"
+reads = []
+writes = []
+computed = []
+init_calldata = []
+tag = "rps_game-actions"
+manifest_name = "rps_game-actions-3af54743"

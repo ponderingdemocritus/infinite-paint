@@ -1,2 +1,2 @@
-tag = "dojo_starter-actions"
-writes = ["dojo_starter-Tile", "dojo_starter-Player"]
+tag = "rps_game-actions"
+writes = ["rps_game-Tile", "rps_game-Player"]

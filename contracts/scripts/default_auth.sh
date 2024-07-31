@@ -15,16 +15,16 @@ check_cmd() {
 
 need_cmd jq
 
-export WORLD_ADDRESS=$(cat ./manifests/prod/manifest.json | jq -r '.world.address')
+export WORLD_ADDRESS=$(cat ./manifests/prod/deployment/manifest.json | jq -r '.world.address')
 
 echo "---------------------------------------------------------------------------"
 echo world : $WORLD_ADDRESS
 echo "---------------------------------------------------------------------------"
 
 # enable system -> models authorizations
-sozo auth grant --world $WORLD_ADDRESS --wait writer \
-  Tile,dojo_starter::systems::actions::actions\
-  Player,dojo_starter::systems::actions::actions\
+sozo --profile prod auth grant --world $WORLD_ADDRESS --wait writer \
+  dojo_starter-Tile,dojo_starter-actions\
+  dojo_starter-Player,dojo_starter-actions\
   >/dev/null
 
 echo "Default authorizations have been successfully set."

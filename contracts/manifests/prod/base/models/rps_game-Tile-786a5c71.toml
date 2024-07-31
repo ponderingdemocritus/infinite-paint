@@ -1,0 +1,26 @@
+kind = "DojoModel"
+class_hash = "0x36278a23f6469e4479888959ff373c85284d6ee8d4ac087c5d4eeff668ed87b"
+original_class_hash = "0x36278a23f6469e4479888959ff373c85284d6ee8d4ac087c5d4eeff668ed87b"
+abi = "manifests/prod/base/abis/models/rps_game-Tile-786a5c71.json"
+tag = "rps_game-Tile"
+manifest_name = "rps_game-Tile-786a5c71"
+
+[[members]]
+name = "x"
+type = "u32"
+key = true
+
+[[members]]
+name = "y"
+type = "u32"
+key = true
+
+[[members]]
+name = "color"
+type = "felt252"
+key = false
+
+[[members]]
+name = "owner"
+type = "ContractAddress"
+key = false

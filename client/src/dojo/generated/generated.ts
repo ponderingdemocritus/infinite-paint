@@ -22,7 +22,7 @@ export async function setupWorld(provider: DojoProvider) {
 						entrypoint: 'create_player',
 						calldata: [],
 					},
-					'dojo_starter'
+					'rps_game'
 				);
 			} catch (error) {
 				console.error('Error executing spawn:', error);
@@ -38,7 +38,7 @@ export async function setupWorld(provider: DojoProvider) {
 						entrypoint: 'paint',
 						calldata: [x, y, color],
 					},
-					'dojo_starter'
+					'rps_game'
 				);
 			} catch (error) {
 				console.error('Error executing spawn:', error);

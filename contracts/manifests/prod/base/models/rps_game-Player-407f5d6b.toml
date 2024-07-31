@@ -1,0 +1,21 @@
+kind = "DojoModel"
+class_hash = "0x5835ea97471041a0da70e3838b811bfbecf0588a31528ef06529dad0419b198"
+original_class_hash = "0x5835ea97471041a0da70e3838b811bfbecf0588a31528ef06529dad0419b198"
+abi = "manifests/prod/base/abis/models/rps_game-Player-407f5d6b.json"
+tag = "rps_game-Player"
+manifest_name = "rps_game-Player-407f5d6b"
+
+[[members]]
+name = "owner"
+type = "ContractAddress"
+key = true
+
+[[members]]
+name = "last_action"
+type = "u64"
+key = false
+
+[[members]]
+name = "points"
+type = "u64"
+key = false
