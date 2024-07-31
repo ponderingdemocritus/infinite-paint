@@ -1,7 +1,7 @@
 kind = "DojoModel"
 class_hash = "0x269b4d380152329b48a7b367b7331f95c28a4cf1582a07c079490823e48e05"
 original_class_hash = "0x269b4d380152329b48a7b367b7331f95c28a4cf1582a07c079490823e48e05"
-abi = "manifests/prod/base/abis/models/rps_game-Tile-786a5c71.json"
+abi = "manifests/dev/base/abis/models/rps_game-Tile-786a5c71.json"
 tag = "rps_game-Tile"
 manifest_name = "rps_game-Tile-786a5c71"
 

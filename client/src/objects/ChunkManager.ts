@@ -12,6 +12,7 @@ export class ChunkManager {
 	private coordinatesSubject: Subject<[number, number][]> = new Subject();
 
 	private maxWorldSize = 1000;
+	private debounceTime = 1200;
 
 	loadedChunks: Map<string, THREE.Group> = new Map();
 	chunkSize = 20;
@@ -87,7 +88,7 @@ export class ChunkManager {
 	private initializeSubscription() {
 		this.coordinatesSubject
 			.pipe(
-				debounceTime(2000) // Adjust this value as needed
+				debounceTime(this.debounceTime) // Adjust this value as needed
 			)
 			.subscribe((coordinates) => {
 				this.updateSubscription(coordinates);

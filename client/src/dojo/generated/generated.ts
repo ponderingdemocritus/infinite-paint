@@ -13,14 +13,14 @@ export interface MoveProps {
 
 export async function setupWorld(provider: DojoProvider) {
 	function actions() {
-		const create_player = async ({ account }: { account: AccountInterface }) => {
+		const create_player = async ({ account, faction }: { account: AccountInterface; faction: number }) => {
 			try {
 				return await provider.execute(
 					account,
 					{
 						contractName: 'actions',
 						entrypoint: 'create_player',
-						calldata: [],
+						calldata: [faction],
 					},
 					'rps_game'
 				);
@@ -29,14 +29,14 @@ export async function setupWorld(provider: DojoProvider) {
 				throw error;
 			}
 		};
-		const paint = async ({ account, x, y, color }: { account: AccountInterface; x: string; y: string; color: string }) => {
+		const paint = async ({ account, x, y }: { account: AccountInterface; x: string; y: string }) => {
 			try {
 				return await provider.execute(
 					account,
 					{
 						contractName: 'actions',
 						entrypoint: 'paint',
-						calldata: [x, y, color],
+						calldata: [x, y],
 					},
 					'rps_game'
 				);

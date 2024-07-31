@@ -19,7 +19,7 @@ export class TileSystem {
 
 			console.log(value);
 
-			this.updateTile(value[0]?.x || 0, value[0]?.y || 0, value[0]?.color.toString() || '');
+			this.updateTile(value[0]?.x || 0, value[0]?.y || 0, value[0]?.state.toString() || '');
 		});
 	}
 

@@ -381,6 +381,10 @@
       {
         "name": "points",
         "type": "core::integer::u64"
+      },
+      {
+        "name": "faction",
+        "type": "core::felt252"
       }
     ]
   },

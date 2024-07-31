@@ -6,7 +6,7 @@
 		"build": "tsc && vite build",
 		"serve": "vite preview --host",
 		"pretty": "prettier --write 'src/**/*.{ts,html,scss}'",
-		"components": "npx @dojoengine/core ../contracts/manifests/dev/manifest.json src/dojo/generated/contractComponents.ts http://localhost:5050 0xb4079627ebab1cd3cf9fd075dda1ad2454a7a448bf659591f259efa2519b18"
+		"components": "npx @dojoengine/core ../contracts/manifests/dev/deployment/manifest.json src/dojo/generated/contractComponents.ts http://localhost:5050 0x177292c9085a51b0a5df818f11cbbb6cd18bf6e3c372219746bc8f92e8c83b5"
 	},
 	"peerDependencies": {
 		"starknet": "6.7.0"

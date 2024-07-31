@@ -364,11 +364,11 @@
   {
     "type": "impl",
     "name": "tileImpl",
-    "interface_name": "dojo_starter::models::tile::Itile"
+    "interface_name": "rps_game::models::tile::Itile"
   },
   {
     "type": "struct",
-    "name": "dojo_starter::models::tile::Tile",
+    "name": "rps_game::models::tile::Tile",
     "members": [
       {
         "name": "x",
@@ -379,7 +379,7 @@
         "type": "core::integer::u32"
       },
       {
-        "name": "color",
+        "name": "state",
         "type": "core::felt252"
       },
       {
@@ -390,7 +390,7 @@
   },
   {
     "type": "interface",
-    "name": "dojo_starter::models::tile::Itile",
+    "name": "rps_game::models::tile::Itile",
     "items": [
       {
         "type": "function",
@@ -398,7 +398,7 @@
         "inputs": [
           {
             "name": "model",
-            "type": "dojo_starter::models::tile::Tile"
+            "type": "rps_game::models::tile::Tile"
           }
         ],
         "outputs": [],
@@ -408,7 +408,7 @@
   },
   {
     "type": "event",
-    "name": "dojo_starter::models::tile::tile::Event",
+    "name": "rps_game::models::tile::tile::Event",
     "kind": "enum",
     "variants": []
   }

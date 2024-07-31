@@ -1,7 +1,7 @@
 kind = "DojoModel"
 class_hash = "0x4e2c649045e6a7d138d16b084c6e7bd07bd45b9eba200f0eaf4713254fb65bd"
 original_class_hash = "0x4e2c649045e6a7d138d16b084c6e7bd07bd45b9eba200f0eaf4713254fb65bd"
-abi = "manifests/prod/base/abis/models/rps_game-Player-407f5d6b.json"
+abi = "manifests/dev/base/abis/models/rps_game-Player-407f5d6b.json"
 tag = "rps_game-Player"
 manifest_name = "rps_game-Player-407f5d6b"
 

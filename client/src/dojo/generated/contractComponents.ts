@@ -9,11 +9,11 @@ export function defineContractComponents(world: World) {
 		Player: (() => {
 			return defineComponent(
 				world,
-				{ owner: RecsType.BigInt, last_action: RecsType.BigInt, points: RecsType.BigInt },
+				{ owner: RecsType.BigInt, last_action: RecsType.BigInt, points: RecsType.BigInt, faction: RecsType.BigInt },
 				{
 					metadata: {
 						name: 'rps_game-Player',
-						types: ['contractaddress', 'u64', 'u64'],
+						types: ['contractaddress', 'u64', 'u64', 'felt252'],
 						customTypes: [],
 					},
 				}
@@ -22,7 +22,7 @@ export function defineContractComponents(world: World) {
 		Tile: (() => {
 			return defineComponent(
 				world,
-				{ x: RecsType.Number, y: RecsType.Number, color: RecsType.BigInt, owner: RecsType.BigInt },
+				{ x: RecsType.Number, y: RecsType.Number, state: RecsType.BigInt, owner: RecsType.BigInt },
 				{
 					metadata: {
 						name: 'rps_game-Tile',

@@ -138,7 +138,12 @@
       {
         "type": "function",
         "name": "create_player",
-        "inputs": [],
+        "inputs": [
+          {
+            "name": "faction",
+            "type": "core::felt252"
+          }
+        ],
         "outputs": [],
         "state_mutability": "external"
       },
@@ -153,10 +158,6 @@
           {
             "name": "y",
             "type": "core::integer::u32"
-          },
-          {
-            "name": "color",
-            "type": "core::felt252"
           }
         ],
         "outputs": [],

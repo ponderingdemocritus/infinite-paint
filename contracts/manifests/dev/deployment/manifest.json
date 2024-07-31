@@ -1189,10 +1189,10 @@
         ]
       }
     ],
-    "address": "0x70835f8344647b1e573fe7aeccbf044230089eb19624d3c7dea4080f5dcb025",
-    "transaction_hash": "0x51a2a73afb296548a8452242d4075fb51903b78b884ac97dc9d5ea573d0816b",
-    "block_number": 18,
-    "seed": "dojo_starter",
+    "address": "0x177292c9085a51b0a5df818f11cbbb6cd18bf6e3c372219746bc8f92e8c83b5",
+    "transaction_hash": "0x78990fc2e4abd71716cdc313abb1945c8469329e9b4aaf75aa6f665c2cbaa86",
+    "block_number": 16,
+    "seed": "rps_game",
     "metadata": {
       "profile_name": "dev",
       "rpc_url": "http://localhost:5050/"
@@ -1210,9 +1210,9 @@
   "contracts": [
     {
       "kind": "DojoContract",
-      "address": "0x5f4c155f43bdc72bcedeb4cc20cac9fe62102a2d86f13b0bd4473066824b69",
-      "class_hash": "0x69a578ad8c3dbd59abd2706cdac8199f1297224c02303b1bf0995758a6da7c2",
-      "original_class_hash": "0x69a578ad8c3dbd59abd2706cdac8199f1297224c02303b1bf0995758a6da7c2",
+      "address": "0x7908aacf69a8a47b414b5f82e36b1ce2a50e295ad9329b75780b30df4c58fc3",
+      "class_hash": "0x4fc6987c5da77abf7545be7b0420f5da817fcad2cfcd598c6d4cc49d0b7807f",
+      "original_class_hash": "0x4fc6987c5da77abf7545be7b0420f5da817fcad2cfcd598c6d4cc49d0b7807f",
       "base_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
       "abi": [
         {
@@ -1345,16 +1345,21 @@
         {
           "type": "impl",
           "name": "ActionsImpl",
-          "interface_name": "dojo_starter::systems::actions::IActions"
+          "interface_name": "rps_game::systems::actions::IActions"
         },
         {
           "type": "interface",
-          "name": "dojo_starter::systems::actions::IActions",
+          "name": "rps_game::systems::actions::IActions",
           "items": [
             {
               "type": "function",
               "name": "create_player",
-              "inputs": [],
+              "inputs": [
+                {
+                  "name": "faction",
+                  "type": "core::felt252"
+                }
+              ],
               "outputs": [],
               "state_mutability": "external"
             },
@@ -1369,10 +1374,6 @@
                 {
                   "name": "y",
                   "type": "core::integer::u32"
-                },
-                {
-                  "name": "color",
-                  "type": "core::felt252"
                 }
               ],
               "outputs": [],
@@ -1383,11 +1384,11 @@
         {
           "type": "impl",
           "name": "IDojoInitImpl",
-          "interface_name": "dojo_starter::systems::actions::actions::IDojoInit"
+          "interface_name": "rps_game::systems::actions::actions::IDojoInit"
         },
         {
           "type": "interface",
-          "name": "dojo_starter::systems::actions::actions::IDojoInit",
+          "name": "rps_game::systems::actions::actions::IDojoInit",
           "items": [
             {
               "type": "function",
@@ -1447,7 +1448,7 @@
         },
         {
           "type": "event",
-          "name": "dojo_starter::systems::actions::actions::Event",
+          "name": "rps_game::systems::actions::actions::Event",
           "kind": "enum",
           "variants": [
             {
@@ -1460,13 +1461,13 @@
       ],
       "reads": [],
       "writes": [
-        "dojo_starter-Tile",
-        "dojo_starter-Player"
+        "rps_game-Tile",
+        "rps_game-Player"
       ],
       "computed": [],
       "init_calldata": [],
-      "tag": "dojo_starter-actions",
-      "manifest_name": "dojo_starter-actions-7a1c7102"
+      "tag": "rps_game-actions",
+      "manifest_name": "rps_game-actions-3af54743"
     }
   ],
   "models": [
@@ -1487,10 +1488,15 @@
           "name": "points",
           "type": "u64",
           "key": false
+        },
+        {
+          "name": "faction",
+          "type": "felt252",
+          "key": false
         }
       ],
-      "class_hash": "0x65b235745c25d85b48b16e55e79832c40638e85895a5895fa521398d39d96b6",
-      "original_class_hash": "0x65b235745c25d85b48b16e55e79832c40638e85895a5895fa521398d39d96b6",
+      "class_hash": "0x4e2c649045e6a7d138d16b084c6e7bd07bd45b9eba200f0eaf4713254fb65bd",
+      "original_class_hash": "0x4e2c649045e6a7d138d16b084c6e7bd07bd45b9eba200f0eaf4713254fb65bd",
       "abi": [
         {
           "type": "impl",
@@ -1857,11 +1863,11 @@
         {
           "type": "impl",
           "name": "playerImpl",
-          "interface_name": "dojo_starter::models::tile::Iplayer"
+          "interface_name": "rps_game::models::tile::Iplayer"
         },
         {
           "type": "struct",
-          "name": "dojo_starter::models::tile::Player",
+          "name": "rps_game::models::tile::Player",
           "members": [
             {
               "name": "owner",
@@ -1874,12 +1880,16 @@
             {
               "name": "points",
               "type": "core::integer::u64"
+            },
+            {
+              "name": "faction",
+              "type": "core::felt252"
             }
           ]
         },
         {
           "type": "interface",
-          "name": "dojo_starter::models::tile::Iplayer",
+          "name": "rps_game::models::tile::Iplayer",
           "items": [
             {
               "type": "function",
@@ -1887,7 +1897,7 @@
               "inputs": [
                 {
                   "name": "model",
-                  "type": "dojo_starter::models::tile::Player"
+                  "type": "rps_game::models::tile::Player"
                 }
               ],
               "outputs": [],
@@ -1897,13 +1907,13 @@
         },
         {
           "type": "event",
-          "name": "dojo_starter::models::tile::player::Event",
+          "name": "rps_game::models::tile::player::Event",
           "kind": "enum",
           "variants": []
         }
       ],
-      "tag": "dojo_starter-Player",
-      "manifest_name": "dojo_starter-Player-1cccb05d"
+      "tag": "rps_game-Player",
+      "manifest_name": "rps_game-Player-407f5d6b"
     },
     {
       "kind": "DojoModel",
@@ -1919,7 +1929,7 @@
           "key": true
         },
         {
-          "name": "color",
+          "name": "state",
           "type": "felt252",
           "key": false
         },
@@ -1929,8 +1939,8 @@
           "key": false
         }
       ],
-      "class_hash": "0xce7fcf02e142e917f160737b7988a25da6594fffaa193fb4f61a29bee1f52d",
-      "original_class_hash": "0xce7fcf02e142e917f160737b7988a25da6594fffaa193fb4f61a29bee1f52d",
+      "class_hash": "0x269b4d380152329b48a7b367b7331f95c28a4cf1582a07c079490823e48e05",
+      "original_class_hash": "0x269b4d380152329b48a7b367b7331f95c28a4cf1582a07c079490823e48e05",
       "abi": [
         {
           "type": "impl",
@@ -2297,11 +2307,11 @@
         {
           "type": "impl",
           "name": "tileImpl",
-          "interface_name": "dojo_starter::models::tile::Itile"
+          "interface_name": "rps_game::models::tile::Itile"
         },
         {
           "type": "struct",
-          "name": "dojo_starter::models::tile::Tile",
+          "name": "rps_game::models::tile::Tile",
           "members": [
             {
               "name": "x",
@@ -2312,7 +2322,7 @@
               "type": "core::integer::u32"
             },
             {
-              "name": "color",
+              "name": "state",
               "type": "core::felt252"
             },
             {
@@ -2323,7 +2333,7 @@
         },
         {
           "type": "interface",
-          "name": "dojo_starter::models::tile::Itile",
+          "name": "rps_game::models::tile::Itile",
           "items": [
             {
               "type": "function",
@@ -2331,7 +2341,7 @@
               "inputs": [
                 {
                   "name": "model",
-                  "type": "dojo_starter::models::tile::Tile"
+                  "type": "rps_game::models::tile::Tile"
                 }
               ],
               "outputs": [],
@@ -2341,13 +2351,13 @@
         },
         {
           "type": "event",
-          "name": "dojo_starter::models::tile::tile::Event",
+          "name": "rps_game::models::tile::tile::Event",
           "kind": "enum",
           "variants": []
         }
       ],
-      "tag": "dojo_starter-Tile",
-      "manifest_name": "dojo_starter-Tile-269db396"
+      "tag": "rps_game-Tile",
+      "manifest_name": "rps_game-Tile-786a5c71"
     }
   ]
 }

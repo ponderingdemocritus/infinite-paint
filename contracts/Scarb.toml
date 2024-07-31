@@ -27,9 +27,9 @@ private_key = "0x2bbf4f9fd0bbb2e60b0316c1fe0b76cf7a4d0198bd493ced9b8df2a3a24d68a
 #world_address = "0xb4079627ebab1cd3cf9fd075dda1ad2454a7a448bf659591f259efa2519b18"  # Uncomment and update this line with your world address.
 
 [profile.prod.tool.dojo.env]
-rpc_url = "https://api.cartridge.gg/x/color-4/katana"
-account_address = "0x48d8610aa13f6b3d141e0a96e7362825b2c00ac6c3b9f53204584af8914511f"
-private_key = "0x206a038e062589b34163112ef9ec0ab3146bb8d169b29a527ee87cf86ba9c15"
+rpc_url = "https://api.cartridge.gg/x/rps/katana"
+account_address = "0x35809389d91b6a7810b39ba7b382958b31f805d4c4ac2b562669db38771824c"
+private_key = "0x2d96df2d09f3c9628460b43db25ddadd93e443b49bdc369cf5ece5feaff4034"
 world_address = "0x177292c9085a51b0a5df818f11cbbb6cd18bf6e3c372219746bc8f92e8c83b5"
 
 [profile.prod.tool.dojo.world]

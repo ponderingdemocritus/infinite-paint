@@ -9,7 +9,7 @@ import { ChunkManager, OFFSET } from './ChunkManager';
 import { TileSystem } from './TileSystem';
 import { getSyncEntities } from '@dojoengine/state';
 import { getEntityIdFromKeys } from '@dojoengine/utils';
-import { Has, HasValue, defineSystem } from '@dojoengine/recs';
+import { Has, HasValue, defineComponentSystem, defineSystem } from '@dojoengine/recs';
 
 export class Scene {
 	private scene!: THREE.Scene;
@@ -39,7 +39,7 @@ export class Scene {
 	private height = window.innerHeight;
 
 	private contextMenu!: HTMLDivElement;
-	private selectedColor: number = 1;
+	private selectedFaction: number = 1;
 
 	constructor(dojoContext: SetupResult) {
 		this.dojo = dojoContext;
@@ -77,7 +77,7 @@ export class Scene {
 
 		this.setupMouseListeners();
 
-		this.createContextMenu();
+		// this.createContextMenu();
 
 		this.animate();
 
@@ -86,6 +86,8 @@ export class Scene {
 
 		this.tileSystem = new TileSystem(this.dojo, this.chunkManager);
 		this.tileSystem.setupTileSystem();
+
+		this.setupPlayerSystem();
 	}
 
 	private setupControls() {
@@ -129,9 +131,7 @@ export class Scene {
 	private setupMouseListeners() {
 		this.renderer.domElement.addEventListener('contextmenu', (event) => this.onContextMenu(event), false);
 		this.renderer.domElement.addEventListener('click', (event) => this.onMouseClick(event), false);
-		document.addEventListener('click', () => {
-			this.contextMenu.style.display = 'none';
-		});
+		document.addEventListener('click', () => {});
 		this.renderer.domElement.addEventListener('mousemove', (event) => this.onMouseHover(event), false);
 	}
 
@@ -163,14 +163,11 @@ export class Scene {
 
 				this.showSpinner(event.clientX, event.clientY);
 
-				console.log(this.selectedColor, 'color');
-
 				try {
 					await this.dojo.client.actions.paint({
 						account: this.dojo.burnerManager.account,
 						x: worldX.toString(),
 						y: worldZ.toString(),
-						color: this.selectedColor.toString(),
 					});
 
 					await new Promise<void>((resolve) => {
@@ -270,35 +267,48 @@ export class Scene {
 
 		const intersects = this.raycaster.intersectObjects(this.scene.children, true);
 
-		if (this.hoveredMesh && this.originalMaterial) {
-			this.hoveredMesh.material = this.originalMaterial;
-			this.hoveredMesh = null;
-			this.originalMaterial = null;
-		}
+		let hoveredMesh: THREE.Mesh | null = null;
 
 		for (let intersect of intersects) {
 			if (intersect.object instanceof THREE.Mesh) {
-				const mesh = intersect.object as THREE.Mesh;
+				hoveredMesh = intersect.object as THREE.Mesh;
+				break;
+			}
+		}
 
-				// Store original material and apply hover effect
-				this.hoveredMesh = mesh;
-				this.originalMaterial = mesh.material as THREE.Material;
+		if (hoveredMesh !== this.hoveredMesh) {
+			if (this.hoveredMesh && this.originalMaterial) {
+				this.hoveredMesh.material = this.originalMaterial;
+			}
 
-				const hoverTexture = new THREE.TextureLoader().load(this.getSelectedTexture());
+			if (hoveredMesh) {
+				this.hoveredMesh = hoveredMesh;
+				this.originalMaterial = hoveredMesh.material as THREE.Material;
+
+				const hoverTexture = new THREE.TextureLoader().load(this.getSelectedTexture(this.selectedFaction));
 				const hoverMaterial = new THREE.MeshBasicMaterial({
 					map: hoverTexture,
 					transparent: true,
 					opacity: 0.7,
 				});
-				mesh.material = hoverMaterial;
-
-				break;
+				hoveredMesh.material = hoverMaterial;
+			} else {
+				this.hoveredMesh = null;
+				this.originalMaterial = null;
 			}
 		}
 	}
 
-	private getSelectedTexture(): string {
-		switch (this.selectedColor) {
+	setupPlayerSystem() {
+		defineComponentSystem(this.dojo.world, this.dojo.clientComponents.Player, (update) => {
+			const { value } = update;
+
+			this.selectedFaction = parseInt(value[0].faction.toString());
+		});
+	}
+
+	private getSelectedTexture(state: number): string {
+		switch (this.selectedFaction) {
 			case 1:
 				return '/textures/rock.png';
 			case 2:
@@ -309,37 +319,37 @@ export class Scene {
 				return '/textures/paper.png';
 		}
 	}
-	private createContextMenu() {
-		this.contextMenu = document.createElement('div');
-		this.contextMenu.style.position = 'absolute';
-		this.contextMenu.style.display = 'none';
-		this.contextMenu.style.backgroundColor = 'white';
-		this.contextMenu.style.border = '1px solid black';
-		this.contextMenu.style.padding = '5px';
+	// private createContextMenu() {
+	// 	this.contextMenu = document.createElement('div');
+	// 	this.contextMenu.style.position = 'absolute';
+	// 	this.contextMenu.style.display = 'none';
+	// 	this.contextMenu.style.backgroundColor = 'white';
+	// 	this.contextMenu.style.border = '1px solid black';
+	// 	this.contextMenu.style.padding = '5px';
 
-		const images = [
-			{ src: '/textures/rock.png', color: 1 },
-			{ src: '/textures/paper.png', color: 2 },
-			{ src: '/textures/scissors.png', color: 3 },
-		];
+	// 	const images = [
+	// 		{ src: '/textures/rock.png', color: 1 },
+	// 		{ src: '/textures/paper.png', color: 2 },
+	// 		{ src: '/textures/scissors.png', color: 3 },
+	// 	];
 
-		images.forEach(({ src, color }) => {
-			const imageButton = document.createElement('img');
-			imageButton.src = src;
-			imageButton.style.width = '30px';
-			imageButton.style.height = '30px';
-			imageButton.style.margin = '2px';
-			imageButton.style.cursor = 'pointer';
-			imageButton.onclick = () => {
-				console.log('Selected color:', color);
-				this.selectedColor = color;
-				this.contextMenu.style.display = 'none';
-			};
-			this.contextMenu.appendChild(imageButton);
-		});
+	// 	images.forEach(({ src, color }) => {
+	// 		const imageButton = document.createElement('img');
+	// 		imageButton.src = src;
+	// 		imageButton.style.width = '30px';
+	// 		imageButton.style.height = '30px';
+	// 		imageButton.style.margin = '2px';
+	// 		imageButton.style.cursor = 'pointer';
+	// 		imageButton.onclick = () => {
+	// 			console.log('Selected color:', color);
+	// 			this.selectedFaction = color;
+	// 			this.contextMenu.style.display = 'none';
+	// 		};
+	// 		this.contextMenu.appendChild(imageButton);
+	// 	});
 
-		document.body.appendChild(this.contextMenu);
-	}
+	// 	document.body.appendChild(this.contextMenu);
+	// }
 
 	private onContextMenu(event: MouseEvent) {
 		event.preventDefault();

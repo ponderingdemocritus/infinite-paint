@@ -1190,12 +1190,12 @@
       }
     ],
     "address": "0x177292c9085a51b0a5df818f11cbbb6cd18bf6e3c372219746bc8f92e8c83b5",
-    "transaction_hash": "0x4053d183f5fbd7d4ab72ec8dcbabf93f1e1d5b3a1e53136f3279b672ba02c05",
-    "block_number": 3597,
+    "transaction_hash": "0x32e637e2b8a5fb9b761fe81ca4fa684c1c9241bf5b294adeab48fcc946406f",
+    "block_number": 72,
     "seed": "rps_game",
     "metadata": {
       "profile_name": "prod",
-      "rpc_url": "https://api.cartridge.gg/x/color-4/katana"
+      "rpc_url": "https://api.cartridge.gg/x/rps/katana"
     },
     "manifest_name": "dojo-world"
   },
@@ -1211,8 +1211,8 @@
     {
       "kind": "DojoContract",
       "address": "0x7908aacf69a8a47b414b5f82e36b1ce2a50e295ad9329b75780b30df4c58fc3",
-      "class_hash": "0x13e68b585d4575d453832903ab0ec67047beea1ef25440044068d40f97a19ed",
-      "original_class_hash": "0x13e68b585d4575d453832903ab0ec67047beea1ef25440044068d40f97a19ed",
+      "class_hash": "0x4fc6987c5da77abf7545be7b0420f5da817fcad2cfcd598c6d4cc49d0b7807f",
+      "original_class_hash": "0x4fc6987c5da77abf7545be7b0420f5da817fcad2cfcd598c6d4cc49d0b7807f",
       "base_class_hash": "0x2427dd10a58850ac9a5ca6ce04b7771b05330fd18f2e481831ad903b969e6b2",
       "abi": [
         {
@@ -1354,7 +1354,12 @@
             {
               "type": "function",
               "name": "create_player",
-              "inputs": [],
+              "inputs": [
+                {
+                  "name": "faction",
+                  "type": "core::felt252"
+                }
+              ],
               "outputs": [],
               "state_mutability": "external"
             },
@@ -1369,10 +1374,6 @@
                 {
                   "name": "y",
                   "type": "core::integer::u32"
-                },
-                {
-                  "name": "color",
-                  "type": "core::felt252"
                 }
               ],
               "outputs": [],
@@ -1487,10 +1488,15 @@
           "name": "points",
           "type": "u64",
           "key": false
+        },
+        {
+          "name": "faction",
+          "type": "felt252",
+          "key": false
         }
       ],
-      "class_hash": "0x5835ea97471041a0da70e3838b811bfbecf0588a31528ef06529dad0419b198",
-      "original_class_hash": "0x5835ea97471041a0da70e3838b811bfbecf0588a31528ef06529dad0419b198",
+      "class_hash": "0x4e2c649045e6a7d138d16b084c6e7bd07bd45b9eba200f0eaf4713254fb65bd",
+      "original_class_hash": "0x4e2c649045e6a7d138d16b084c6e7bd07bd45b9eba200f0eaf4713254fb65bd",
       "abi": [
         {
           "type": "impl",
@@ -1874,6 +1880,10 @@
             {
               "name": "points",
               "type": "core::integer::u64"
+            },
+            {
+              "name": "faction",
+              "type": "core::felt252"
             }
           ]
         },
@@ -1919,7 +1929,7 @@
           "key": true
         },
         {
-          "name": "color",
+          "name": "state",
           "type": "felt252",
           "key": false
         },
@@ -1929,8 +1939,8 @@
           "key": false
         }
       ],
-      "class_hash": "0x36278a23f6469e4479888959ff373c85284d6ee8d4ac087c5d4eeff668ed87b",
-      "original_class_hash": "0x36278a23f6469e4479888959ff373c85284d6ee8d4ac087c5d4eeff668ed87b",
+      "class_hash": "0x269b4d380152329b48a7b367b7331f95c28a4cf1582a07c079490823e48e05",
+      "original_class_hash": "0x269b4d380152329b48a7b367b7331f95c28a4cf1582a07c079490823e48e05",
       "abi": [
         {
           "type": "impl",
@@ -2312,7 +2322,7 @@
               "type": "core::integer::u32"
             },
             {
-              "name": "color",
+              "name": "state",
               "type": "core::felt252"
             },
             {
