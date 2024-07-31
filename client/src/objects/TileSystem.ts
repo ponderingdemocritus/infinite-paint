@@ -5,7 +5,13 @@ import { shortString } from 'starknet';
 import * as THREE from 'three';
 
 export class TileSystem {
-	constructor(private dojo: SetupResult, private chunkManager: ChunkManager) {}
+	private textureLoader: THREE.TextureLoader;
+	private textureCache: Map<string, THREE.Texture>;
+
+	constructor(private dojo: SetupResult, private chunkManager: ChunkManager) {
+		this.textureLoader = new THREE.TextureLoader();
+		this.textureCache = new Map();
+	}
 
 	setupTileSystem() {
 		defineComponentSystem(this.dojo.world, this.dojo.clientComponents.Tile, (update) => {
@@ -41,14 +47,53 @@ export class TileSystem {
 
 			const tile = chunk.children[tileIndex] as THREE.Mesh;
 			if (tile instanceof THREE.Mesh) {
-				const material = tile.material as THREE.MeshBasicMaterial;
-				material.color.setHex(parseInt(shortString.decodeShortString(value)));
-				material.opacity = 0.5;
+				const hexValue = value;
+
+				console.log('value', hexValue);
+				this.applyTextureToTile(tile, hexValue);
 			} else {
 				console.log(`Tile not found at index ${tileIndex}`);
 			}
 		} else {
 			console.log(`Chunk not loaded for tile at (${x}, ${y})`);
 		}
+	}
+
+	private applyTextureToTile(tile: THREE.Mesh, hexValue: string) {
+		const texturePath = this.getTexturePathFromHex(hexValue);
+
+		if (this.textureCache.has(texturePath)) {
+			const texture = this.textureCache.get(texturePath)!;
+			this.setTileTexture(tile, texture);
+		} else {
+			this.textureLoader.load(
+				texturePath,
+				(texture) => {
+					this.textureCache.set(texturePath, texture);
+					this.setTileTexture(tile, texture);
+				},
+				undefined,
+				(error) => console.error('Error loading texture:', error)
+			);
+		}
+	}
+
+	private setTileTexture(tile: THREE.Mesh, texture: THREE.Texture) {
+		const material = tile.material as THREE.MeshBasicMaterial;
+		material.map = texture;
+		material.needsUpdate = true;
+		material.opacity = 1; // Make fully opaque
+	}
+
+	private getTexturePathFromHex(hexValue: string): string {
+		// Implement your logic to map hex values to texture paths
+		// For example:
+		const textureMap: { [key: string]: string } = {
+			1: '/textures/rock.png',
+			2: '/textures/paper.png',
+			3: '/textures/scissors.png',
+			// Add more mappings as needed
+		};
+		return textureMap[hexValue] || '/textures/default.png';
 	}
 }

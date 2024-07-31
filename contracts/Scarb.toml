@@ -1,6 +1,6 @@
 [package]
 cairo-version = "=2.7.0-rc.3"
-name = "dojo_starter"
+name = "rps_game"
 version = "0.7.0"
 
 [cairo]
@@ -27,10 +27,21 @@ private_key = "0x2bbf4f9fd0bbb2e60b0316c1fe0b76cf7a4d0198bd493ced9b8df2a3a24d68a
 #world_address = "0xb4079627ebab1cd3cf9fd075dda1ad2454a7a448bf659591f259efa2519b18"  # Uncomment and update this line with your world address.
 
 [profile.prod.tool.dojo.env]
-rpc_url = "https://api.cartridge.gg/x/color-2/katana"
-account_address = "0x17ce6389066a90865d171faeca2b553e66f07186dd9d49beddcc7a331ce93cf"
-private_key = "0x3352a3aa368bf61e6d3b53f39e81cd95c413521cf51d8340e2a5ddb29bcd0ab"
-world_address = "0xb4079627ebab1cd3cf9fd075dda1ad2454a7a448bf659591f259efa2519b18"
+rpc_url = "https://api.cartridge.gg/x/color-4/katana"
+account_address = "0x48d8610aa13f6b3d141e0a96e7362825b2c00ac6c3b9f53204584af8914511f"
+private_key = "0x206a038e062589b34163112ef9ec0ab3146bb8d169b29a527ee87cf86ba9c15"
+world_address = "0x70835f8344647b1e573fe7aeccbf044230089eb19624d3c7dea4080f5dcb025"
+
+[profile.prod.tool.dojo.world]
+name = "Dojo starter"
+description = "The official Dojo Starter guide, the quickest and most streamlined way to get your Dojo Autonomous World up and running. This guide will assist you with the initial setup, from cloning the repository to deploying your world."
+cover_uri = "file://assets/cover.png"
+icon_uri = "file://assets/icon.png"
+website = "https://github.com/dojoengine/dojo-starter"
+seed = "dojo_starter"
+
+[profile.prod.tool.dojo.world.namespace]
+default = "dojo_starter"
 
 [tool.dojo.world]
 name = "Dojo starter"

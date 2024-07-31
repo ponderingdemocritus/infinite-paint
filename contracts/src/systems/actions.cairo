@@ -41,7 +41,7 @@ mod actions {
 
             set!(world, (tile));
 
-            assert(player.last_action + 15 <= get_block_timestamp(), 'time not up');
+            assert(player.last_action + 5 <= get_block_timestamp(), 'time not up');
 
             player.last_action = get_block_timestamp();
 

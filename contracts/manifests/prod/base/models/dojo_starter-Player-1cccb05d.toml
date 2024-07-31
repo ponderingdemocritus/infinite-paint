@@ -1,0 +1,21 @@
+kind = "DojoModel"
+class_hash = "0x65b235745c25d85b48b16e55e79832c40638e85895a5895fa521398d39d96b6"
+original_class_hash = "0x65b235745c25d85b48b16e55e79832c40638e85895a5895fa521398d39d96b6"
+abi = "manifests/prod/base/abis/models/dojo_starter-Player-1cccb05d.json"
+tag = "dojo_starter-Player"
+manifest_name = "dojo_starter-Player-1cccb05d"
+
+[[members]]
+name = "owner"
+type = "ContractAddress"
+key = true
+
+[[members]]
+name = "last_action"
+type = "u64"
+key = false
+
+[[members]]
+name = "points"
+type = "u64"
+key = false

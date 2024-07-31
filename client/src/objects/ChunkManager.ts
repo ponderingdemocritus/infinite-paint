@@ -1,16 +1,20 @@
 import { getEntityIdFromKeys } from '@dojoengine/utils';
 import { SetupResult } from '../dojo/generated/setup';
 import * as THREE from 'three';
-import { getComponentValue } from '@dojoengine/recs';
-import { shortString } from 'starknet';
 import { Subscription } from '@dojoengine/torii-client';
 import { getSyncEntities } from '@dojoengine/state';
+import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 export const OFFSET = 5000;
 
 export class ChunkManager {
+	private coordinatesSubject: Subject<[number, number][]> = new Subject();
+
+	private maxWorldSize = 1000;
+
 	loadedChunks: Map<string, THREE.Group> = new Map();
-	chunkSize = 10;
+	chunkSize = 20;
 	chunkLoadDistance = 1;
 
 	private squares: THREE.Mesh[][] = [];
@@ -24,7 +28,9 @@ export class ChunkManager {
 	private chunkUpdateInterval: number = 100; // Milliseconds between chunk updates
 	private lastChunkUpdateTime: number = 0;
 
-	constructor(private scene: THREE.Scene, private dojo: SetupResult) {}
+	constructor(private scene: THREE.Scene, private dojo: SetupResult) {
+		this.initializeSubscription();
+	}
 
 	public update(cameraPosition: THREE.Vector3) {
 		const currentTime = performance.now();
@@ -63,7 +69,7 @@ export class ChunkManager {
 			}
 		}
 
-		const greenLineMaterial = new THREE.LineBasicMaterial({ color: 0x00ff00 }); // Green color
+		const greenLineMaterial = new THREE.LineBasicMaterial({ color: 'red' }); // Green color
 
 		for (let i = 0; i <= this.chunkSize; i++) {
 			const lineGeometry1 = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(i, 0, 0), new THREE.Vector3(i, 0, this.chunkSize)]);
@@ -78,12 +84,22 @@ export class ChunkManager {
 		return chunk;
 	}
 
-	async subscribeToChunkState() {
+	private initializeSubscription() {
+		this.coordinatesSubject
+			.pipe(
+				debounceTime(2000) // Adjust this value as needed
+			)
+			.subscribe((coordinates) => {
+				this.updateSubscription(coordinates);
+			});
+	}
+
+	private async updateSubscription(coordinates: [number, number][]) {
 		if (this.subscription) this.subscription.cancel();
+
 		const sub = await getSyncEntities(this.dojo.toriiClient, this.dojo.contractComponents as any, [
 			{
-				// convert to entity id
-				HashedKeys: this.coordinates.map((coord) => getEntityIdFromKeys([BigInt(coord[0]), BigInt(coord[1])]).toString()),
+				HashedKeys: coordinates.map((coord) => getEntityIdFromKeys([BigInt(coord[0]), BigInt(coord[1])]).toString()),
 			},
 		]);
 
@@ -94,9 +110,13 @@ export class ChunkManager {
 		const cameraChunkX = Math.floor(cameraPosition.x / this.chunkSize);
 		const cameraChunkZ = Math.floor(cameraPosition.z / this.chunkSize);
 
-		this.updateCoordinates(cameraChunkX, cameraChunkZ);
-		this.loadUnloadChunks(cameraChunkX, cameraChunkZ);
-		this.subscribeToChunkState();
+		// Clamp the camera chunk coordinates to stay within the max world size
+		const clampedCameraChunkX = Math.max(0, Math.min(cameraChunkX, this.maxWorldSize / this.chunkSize - 1));
+		const clampedCameraChunkZ = Math.max(0, Math.min(cameraChunkZ, this.maxWorldSize / this.chunkSize - 1));
+
+		this.updateCoordinates(clampedCameraChunkX, clampedCameraChunkZ);
+		this.loadUnloadChunks(clampedCameraChunkX, clampedCameraChunkZ);
+		this.coordinatesSubject.next(this.coordinates);
 	}
 
 	private updateCoordinates(cameraChunkX: number, cameraChunkZ: number) {
@@ -120,17 +140,25 @@ export class ChunkManager {
 		}
 	}
 
+	public get worldSize(): number {
+		return this.maxWorldSize;
+	}
+
 	private loadUnloadChunks(cameraChunkX: number, cameraChunkZ: number) {
 		for (let dx = -this.chunkLoadDistance; dx <= this.chunkLoadDistance; dx++) {
 			for (let dz = -this.chunkLoadDistance; dz <= this.chunkLoadDistance; dz++) {
 				const chunkX = cameraChunkX + dx;
 				const chunkZ = cameraChunkZ + dz;
-				const chunkKey = `${chunkX},${chunkZ}`;
 
-				if (!this.loadedChunks.has(chunkKey)) {
-					const chunk = this.createChunk(chunkX, chunkZ);
-					this.scene.add(chunk);
-					this.loadedChunks.set(chunkKey, chunk);
+				// Check if the chunk is within the max world size
+				if (chunkX >= 0 && chunkX < this.maxWorldSize / this.chunkSize && chunkZ >= 0 && chunkZ < this.maxWorldSize / this.chunkSize) {
+					const chunkKey = `${chunkX},${chunkZ}`;
+
+					if (!this.loadedChunks.has(chunkKey)) {
+						const chunk = this.createChunk(chunkX, chunkZ);
+						this.scene.add(chunk);
+						this.loadedChunks.set(chunkKey, chunk);
+					}
 				}
 			}
 		}

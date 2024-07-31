@@ -1,5 +1,5 @@
 import devManifest from '../../contracts/manifests/dev/deployment/manifest.json';
-import productionManifest from '../../contracts/manifests/prod/manifest.json';
+import productionManifest from '../../contracts/manifests/prod/deployment/manifest.json';
 import { createDojoConfig } from '@dojoengine/core';
 
 const {
@@ -12,7 +12,7 @@ const {
 	VITE_PUBLIC_FEE_TOKEN_ADDRESS,
 } = import.meta.env;
 
-const manifest = devManifest;
+const manifest = VITE_PUBLIC_DEV === 'true' ? devManifest : productionManifest;
 
 export const dojoConfig = createDojoConfig({
 	rpcUrl: VITE_PUBLIC_NODE_URL,

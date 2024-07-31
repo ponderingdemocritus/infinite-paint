@@ -39,7 +39,7 @@ export class Scene {
 	private height = window.innerHeight;
 
 	private contextMenu!: HTMLDivElement;
-	private selectedColor: ColorRepresentation = 0x00ff00;
+	private selectedColor: number = 1;
 
 	constructor(dojoContext: SetupResult) {
 		this.dojo = dojoContext;
@@ -161,19 +161,16 @@ export class Scene {
 				const worldX = chunkX * this.chunkManager.chunkSize + localX + OFFSET;
 				const worldZ = chunkZ * this.chunkManager.chunkSize + localZ + OFFSET;
 
-				// Change the color and opacity of the clicked square
-				// const material = intersect.object.material as THREE.MeshBasicMaterial;
-				// material.color.setHex(this.selectedColor as number);
-				// material.opacity = 0.5;
-
 				this.showSpinner(event.clientX, event.clientY);
+
+				console.log(this.selectedColor, 'color');
 
 				try {
 					await this.dojo.client.actions.paint({
 						account: this.dojo.burnerManager.account,
 						x: worldX.toString(),
 						y: worldZ.toString(),
-						color: shortString.encodeShortString(this.selectedColor.toString()),
+						color: this.selectedColor.toString(),
 					});
 
 					await new Promise<void>((resolve) => {
@@ -212,15 +209,16 @@ export class Scene {
 			cube.style.animation = 'spin 1.5s linear infinite';
 			this.spinner.appendChild(cube);
 
-			const colors = Array(4).fill(this.selectedColor.toString(16).padStart(6, '0').replace(/^/, '#'));
+			const images = ['/textures/paper.png', '/textures/rock.png', '/textures/scissors.png'];
 			['front', 'back', 'right', 'left', 'top', 'bottom'].forEach((face, index) => {
 				const element = document.createElement('div');
 				element.style.position = 'absolute';
 				element.style.width = '100%';
 				element.style.height = '100%';
-				element.style.background = colors[index % colors.length];
-				element.style.opacity = '0.8';
-				element.style.border = `2px solid ${this.selectedColor.toString(16).padStart(6, '0').replace(/^/, '#')}`;
+				element.style.backgroundImage = `url(${images[index % 3]})`;
+				element.style.backgroundSize = 'cover';
+				element.style.opacity = '1';
+				element.style.border = '2px solid #000';
 				element.style.transform = this.getFaceTransform(face);
 				cube.appendChild(element);
 			});
@@ -284,31 +282,33 @@ export class Scene {
 
 				// Store original material and apply hover effect
 				this.hoveredMesh = mesh;
-				this.originalMaterial = mesh.material as any;
+				this.originalMaterial = mesh.material as THREE.Material;
 
+				const hoverTexture = new THREE.TextureLoader().load(this.getSelectedTexture());
 				const hoverMaterial = new THREE.MeshBasicMaterial({
-					color: this.selectedColor,
-					opacity: 0.5,
+					map: hoverTexture,
 					transparent: true,
+					opacity: 0.7,
 				});
 				mesh.material = hoverMaterial;
-
-				const pulseAnimation = () => {
-					if (this.hoveredMesh === mesh) {
-						const scale = 1 + Math.sin(Date.now() * 0.03) * 0.05;
-						mesh.scale.set(scale, scale, scale);
-						requestAnimationFrame(pulseAnimation);
-					} else {
-						mesh.scale.set(1, 1, 1);
-					}
-				};
-				pulseAnimation();
 
 				break;
 			}
 		}
 	}
 
+	private getSelectedTexture(): string {
+		switch (this.selectedColor) {
+			case 1:
+				return '/textures/rock.png';
+			case 2:
+				return '/textures/paper.png';
+			case 3:
+				return '/textures/scissors.png';
+			default:
+				return '/textures/paper.png';
+		}
+	}
 	private createContextMenu() {
 		this.contextMenu = document.createElement('div');
 		this.contextMenu.style.position = 'absolute';
@@ -317,19 +317,25 @@ export class Scene {
 		this.contextMenu.style.border = '1px solid black';
 		this.contextMenu.style.padding = '5px';
 
-		const colors: ColorRepresentation[] = [0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff];
+		const images = [
+			{ src: '/textures/rock.png', color: 1 },
+			{ src: '/textures/paper.png', color: 2 },
+			{ src: '/textures/scissors.png', color: 3 },
+		];
 
-		colors.forEach((color) => {
-			const colorButton = document.createElement('button');
-			colorButton.style.width = '20px';
-			colorButton.style.height = '20px';
-			colorButton.style.backgroundColor = `#${color.toString(16).padStart(6, '0')}`;
-			colorButton.style.margin = '2px';
-			colorButton.onclick = () => {
+		images.forEach(({ src, color }) => {
+			const imageButton = document.createElement('img');
+			imageButton.src = src;
+			imageButton.style.width = '30px';
+			imageButton.style.height = '30px';
+			imageButton.style.margin = '2px';
+			imageButton.style.cursor = 'pointer';
+			imageButton.onclick = () => {
+				console.log('Selected color:', color);
 				this.selectedColor = color;
 				this.contextMenu.style.display = 'none';
 			};
-			this.contextMenu.appendChild(colorButton);
+			this.contextMenu.appendChild(imageButton);
 		});
 
 		document.body.appendChild(this.contextMenu);
